@@ -13,7 +13,7 @@ function DirectionArrow({ direction }: { direction: SortDirection }) {
 }
 
 const chipBase =
-  'inline-flex h-[38px] items-center justify-between gap-2 rounded-2xl border border-dashed px-3 text-sm font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
+  'inline-flex h-[38px] cursor-pointer items-center justify-between gap-2 rounded-2xl border border-dashed px-3 text-sm font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
 const chipActive =
   'border-solid border-teal-700/50 bg-teal-50 text-teal-950 ring-2 ring-teal-700/50'
 
@@ -32,7 +32,8 @@ export function SortControls() {
     <button
       type="button"
       className={`${chipBase} ${chipActive}`}
-      aria-label={`${t('candidates.sortBy')}: ${t('candidates.sortDateApplied')}`}
+      aria-label={`${t('candidates.sortBy')}: ${t('candidates.sortDateApplied')}, ${t(`candidates.${direction}`)}`}
+      aria-pressed="true"
       onClick={toggleDirection}
     >
       <span>{t('candidates.sortDateApplied')}</span>

@@ -58,7 +58,7 @@ export function Dropdown({
     typeof children === 'function' ? children({ close }) : children
 
   const defaultTrigger =
-    'inline-flex w-full items-center justify-between gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-900 shadow-sm outline-none hover:bg-slate-50 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20'
+    'inline-flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-900 shadow-sm outline-none hover:bg-slate-50 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20'
 
   return (
     <div ref={rootRef} className={`relative ${className}`}>

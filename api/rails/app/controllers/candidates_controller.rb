@@ -21,6 +21,18 @@ class CandidatesController < ApplicationController
   end
 
   def update
+    if candidate_params.key?(:reviewed) && !candidate_params.key?(:status)
+      result = Candidates::MarkReviewed.call(
+        candidate: @candidate,
+        reviewed: candidate_params[:reviewed]
+      )
+      return render json: Candidates::Serializer.one(result.candidate) if result.ok?
+
+      return render json: {
+        errors: [ { code: result.error_code, message: I18n.t("candidates.errors.#{result.error_code}") } ]
+      }, status: :unprocessable_entity
+    end
+
     result = Candidates::UpdateStatus.call(
       candidate: @candidate,
       status: candidate_params[:status]
@@ -74,7 +86,7 @@ class CandidatesController < ApplicationController
   end
 
   def candidate_params
-    params.require(:candidate).permit(:status)
+    params.require(:candidate).permit(:status, :reviewed)
   end
 
   def bulk_params

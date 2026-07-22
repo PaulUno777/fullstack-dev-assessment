@@ -38,11 +38,11 @@ export const useCandidatesUiStore = create<CandidatesUiState>()(
   persist(
     (set) => ({
       ...initialFilters,
-      setPage: (page) => set({ page }),
-      setStatuses: (statuses) => set({ statuses, page: 1 }),
-      setQ: (q) => set({ q, page: 1 }),
-      setSort: (sort) => set({ sort, page: 1 }),
-      setDirection: (direction) => set({ direction, page: 1 }),
+      setPage: (page) => set({ page, selectedIds: [] }),
+      setStatuses: (statuses) => set({ statuses, page: 1, selectedIds: [] }),
+      setQ: (q) => set({ q, page: 1, selectedIds: [] }),
+      setSort: (sort) => set({ sort, page: 1, selectedIds: [] }),
+      setDirection: (direction) => set({ direction, page: 1, selectedIds: [] }),
       toggleSelected: (id) =>
         set((state) => ({
           selectedIds: state.selectedIds.includes(id)
@@ -59,6 +59,7 @@ export const useCandidatesUiStore = create<CandidatesUiState>()(
           q: initialFilters.q,
           sort: initialFilters.sort,
           direction: initialFilters.direction,
+          selectedIds: [],
         }),
     }),
     {

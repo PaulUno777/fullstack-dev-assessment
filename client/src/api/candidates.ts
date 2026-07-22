@@ -98,6 +98,22 @@ export async function updateCandidateStatus(
   return parseJson<Candidate>(response)
 }
 
+export async function markCandidateReviewed(
+  id: number,
+  locale: string,
+): Promise<Candidate> {
+  const response = await fetch(`${apiBase()}/candidates/${id}`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Accept-Language': locale,
+    },
+    body: JSON.stringify({ candidate: { reviewed: true } }),
+  })
+  return parseJson<Candidate>(response)
+}
+
 export type BulkUpdateResponse = {
   data: Candidate[]
   meta: { updated: number; failed: number }

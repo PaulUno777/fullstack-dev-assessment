@@ -44,7 +44,7 @@ export function LanguageSwitcher() {
             type="button"
             role="option"
             aria-selected={current === locale}
-            className="flex w-full px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
+            className="flex w-full cursor-pointer px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
             onClick={() => {
               void i18n.changeLanguage(locale)
               close()

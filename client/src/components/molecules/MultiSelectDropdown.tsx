@@ -10,9 +10,9 @@ type Props = {
 }
 
 const chipIdle =
-  'inline-flex w-full items-center justify-between gap-2 rounded-2xl border border-dashed border-slate-300 bg-white/80 px-3 py-2 text-left text-sm text-slate-800 outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-teal-700/30'
+  'inline-flex w-full cursor-pointer items-center justify-between gap-2 rounded-2xl border border-dashed border-slate-300 bg-white/80 px-3 py-2 text-left text-sm text-slate-800 outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-teal-700/30'
 const chipActive =
-  'inline-flex w-full items-center justify-between gap-2 rounded-2xl border border-solid border-teal-700/50 bg-teal-50 px-3 py-2 text-left text-sm text-teal-950 ring-2 ring-teal-700/50 outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
+  'inline-flex w-full cursor-pointer items-center justify-between gap-2 rounded-2xl border border-solid border-teal-700/50 bg-teal-50 px-3 py-2 text-left text-sm text-teal-950 ring-2 ring-teal-700/50 outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
 
 export function MultiSelectDropdown({ value, onChange }: Props) {
   const { t } = useTranslation()
@@ -53,7 +53,7 @@ export function MultiSelectDropdown({ value, onChange }: Props) {
               type="button"
               role="option"
               aria-selected={checked}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
+              className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
               onClick={() => toggle(status)}
             >
               <span
@@ -74,7 +74,7 @@ export function MultiSelectDropdown({ value, onChange }: Props) {
       {active ? (
         <button
           type="button"
-          className="mb-[1px] rounded-2xl border border-dashed border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-600 hover:bg-slate-50"
+          className="mb-[1px] cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-600 hover:bg-slate-50"
           aria-label={t('candidates.clearStatusFilter')}
           onClick={() => onChange([])}
         >

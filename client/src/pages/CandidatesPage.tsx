@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ApiError } from '../api/candidates'
 import {
   useBulkUpdateCandidateStatusMutation,
   useCandidatesListQuery,
+  useMarkCandidateReviewedMutation,
   useUpdateCandidateStatusMutation,
 } from '../hooks/useCandidatesQuery'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
@@ -30,6 +31,9 @@ export function CandidatesPage() {
   const listQuery = useCandidatesListQuery()
   const mutation = useUpdateCandidateStatusMutation()
   const bulkMutation = useBulkUpdateCandidateStatusMutation()
+  const markReviewedMutation = useMarkCandidateReviewedMutation()
+  const page = useCandidatesUiStore((s) => s.page)
+  const setPage = useCandidatesUiStore((s) => s.setPage)
   const selectedIds = useCandidatesUiStore((s) => s.selectedIds)
   const toggleSelected = useCandidatesUiStore((s) => s.toggleSelected)
   const clearSelection = useCandidatesUiStore((s) => s.clearSelection)
@@ -39,6 +43,13 @@ export function CandidatesPage() {
   const [confirmBusy, setConfirmBusy] = useState(false)
 
   const candidates = listQuery.data?.data ?? []
+  const totalPages = listQuery.data?.meta.total_pages ?? 0
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages) {
+      setPage(totalPages)
+    }
+  }, [page, totalPages, setPage])
 
   const partition = useMemo(
     () => partitionSelectedForBulk(candidates, selectedIds),
@@ -52,6 +63,21 @@ export function CandidatesPage() {
       status,
       lockedCount: partition.lockedCount,
     })
+  }
+
+  async function openDetails(candidate: Candidate) {
+    setDetailCandidate(candidate)
+    if (candidate.reviewed) return
+    try {
+      const updated = await markReviewedMutation.mutateAsync(candidate.id)
+      setDetailCandidate(updated)
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : t('candidates.unknownError')
+      setRowErrors((prev) => ({ ...prev, [candidate.id]: message }))
+    }
   }
 
   async function changeStatus(
@@ -79,10 +105,19 @@ export function CandidatesPage() {
     if (!pendingAction) return
     setConfirmBusy(true)
     try {
-      await bulkMutation.mutateAsync({
+      const result = await bulkMutation.mutateAsync({
         ids: pendingAction.ids,
         status: pendingAction.status,
       })
+      if (result.meta.failed > 0) {
+        setRowErrors((prev) => {
+          const next = { ...prev }
+          for (const error of result.errors) {
+            next[error.id] = error.message
+          }
+          return next
+        })
+      }
       clearSelection()
       setPendingAction(null)
       setDetailCandidate(null)
@@ -112,10 +147,11 @@ export function CandidatesPage() {
     : null
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3efe6] text-slate-900">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(180,83,9,0.1),_transparent_35%)]" />
-      <div className="relative mx-auto max-w-5xl px-4 py-10 pb-28 sm:px-6 lg:px-8">
-        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="relative min-h-screen bg-[#f3efe6] text-slate-900">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(180,83,9,0.1),_transparent_35%)]" />
+
+      <div className="relative mx-auto max-w-5xl px-4 pt-10 sm:px-6 lg:px-8">
+        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-900/70">
               {t('app.brand')}
@@ -129,48 +165,53 @@ export function CandidatesPage() {
           </div>
           <LanguageSwitcher />
         </header>
+      </div>
 
-        <div className="space-y-6">
+      <div className="sticky top-0 z-30 border-b border-teal-900/10 bg-teal-900/[0.12] shadow-sm backdrop-blur-md">
+        <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6 lg:px-8">
           <CandidatesToolbar
             page={listQuery.data?.meta.page ?? 1}
             totalPages={listQuery.data?.meta.total_pages ?? 0}
             total={listQuery.data?.meta.total ?? 0}
           />
+        </div>
+      </div>
 
-          {listQuery.isLoading ? (
-            <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-10 text-center text-slate-600">
-              {t('candidates.loading')}
-            </p>
-          ) : null}
+      <div className="relative mx-auto max-w-5xl space-y-6 px-4 py-6 pb-28 sm:px-6 lg:px-8">
+        {listQuery.isLoading ? (
+          <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-10 text-center text-slate-600">
+            {t('candidates.loading')}
+          </p>
+        ) : null}
 
-          {listQuery.isError ? (
-            <p
-              className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-rose-800"
-              role="alert"
-            >
-              {listQuery.error instanceof Error
-                ? listQuery.error.message
-                : t('candidates.loadError')}
-            </p>
-          ) : null}
+        {listQuery.isError ? (
+          <p
+            className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-rose-800"
+            role="alert"
+          >
+            {listQuery.error instanceof Error
+              ? listQuery.error.message
+              : t('candidates.loadError')}
+          </p>
+        ) : null}
 
-          {listQuery.data && listQuery.data.data.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-10 text-center text-slate-600">
-              {t('candidates.empty')}
-            </p>
-          ) : null}
+        {listQuery.data && listQuery.data.data.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-10 text-center text-slate-600">
+            {t('candidates.empty')}
+          </p>
+        ) : null}
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {listQuery.data?.data.map((candidate) => (
-              <CandidateCard
-                key={candidate.id}
-                candidate={candidate}
-                selected={selectedIds.includes(candidate.id)}
-                onToggleSelect={() => toggleSelected(candidate.id)}
-                onOpen={() => setDetailCandidate(candidate)}
-              />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {listQuery.data?.data.map((candidate) => (
+            <CandidateCard
+              key={candidate.id}
+              candidate={candidate}
+              selected={selectedIds.includes(candidate.id)}
+              onToggleSelect={() => toggleSelected(candidate.id)}
+              onOpen={() => void openDetails(candidate)}
+              errorMessage={rowErrors[candidate.id]}
+            />
+          ))}
         </div>
       </div>
 

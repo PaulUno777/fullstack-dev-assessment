@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   bulkUpdateCandidateStatus,
   listCandidates,
+  markCandidateReviewed,
   updateCandidateStatus,
   type ListCandidatesParams,
 } from '../api/candidates'
@@ -63,6 +64,18 @@ export function useBulkUpdateCandidateStatusMutation() {
       ids: number[]
       status: Exclude<CandidateStatus, 'pending'>
     }) => bulkUpdateCandidateStatus(ids, status, i18n.language),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['candidates'] })
+    },
+  })
+}
+
+export function useMarkCandidateReviewedMutation() {
+  const { i18n } = useTranslation()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: number) => markCandidateReviewed(id, i18n.language),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['candidates'] })
     },
