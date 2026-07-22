@@ -5,6 +5,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { cn } from '@/lib/cn'
 
 type Props = {
   label?: string
@@ -61,7 +62,7 @@ export function Dropdown({
     'inline-flex w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-900 shadow-sm outline-none hover:bg-slate-50 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20'
 
   return (
-    <div ref={rootRef} className={`relative ${className}`}>
+    <div ref={rootRef} className={cn('relative', className)}>
       {label ? (
         <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">
           {label}
@@ -86,9 +87,10 @@ export function Dropdown({
         <div
           id={menuId}
           role="listbox"
-          className={`absolute z-[80] mt-1 min-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-lg ${
-            align === 'right' ? 'right-0' : 'left-0'
-          }`}
+          className={cn(
+            'absolute z-80 mt-1 min-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-lg',
+            align === 'right' ? 'right-0' : 'left-0',
+          )}
           onClick={() => {
             if (!keepOpenOnSelect) close()
           }}

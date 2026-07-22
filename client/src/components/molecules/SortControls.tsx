@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/cn'
 import {
   useCandidatesUiStore,
   type SortDirection,
-} from '../../state/candidatesUiStore'
+} from '@/state/candidatesUiStore'
 
 function DirectionArrow({ direction }: { direction: SortDirection }) {
   return (
@@ -31,7 +32,7 @@ export function SortControls() {
   return (
     <button
       type="button"
-      className={`${chipBase} ${chipActive}`}
+      className={cn(chipBase, chipActive)}
       aria-label={`${t('candidates.sortBy')}: ${t('candidates.sortDateApplied')}`}
       onClick={toggleDirection}
     >

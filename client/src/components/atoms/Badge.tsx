@@ -1,4 +1,5 @@
-import type { CandidateStatus } from '../../domain/candidate'
+import type { CandidateStatus } from '@/domain/candidate'
+import { cn } from '@/lib/cn'
 
 const statusStyles: Record<CandidateStatus, string> = {
   pending: 'bg-amber-100 text-amber-900',
@@ -15,7 +16,10 @@ export function StatusBadge({
 }) {
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide ${statusStyles[status]}`}
+      className={cn(
+        'inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide',
+        statusStyles[status],
+      )}
     >
       {label}
     </span>

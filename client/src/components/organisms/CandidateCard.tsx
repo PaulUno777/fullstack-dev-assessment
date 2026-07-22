@@ -1,24 +1,16 @@
 import { useTranslation } from 'react-i18next'
-import type { Candidate } from '../../domain/candidate'
-import { toListFields } from '../../domain/candidate'
-import { ReviewedBadge, StatusBadge } from '../atoms/Badge'
-import { Button } from '../atoms/Button'
+import type { Candidate } from '@/domain/candidate'
+import { toListFields } from '@/domain/candidate'
+import { cn } from '@/lib/cn'
+import { StatusBadge } from '@/components/atoms/Badge'
+import { Button } from '@/components/atoms/Button'
+import { CandidateMetaFields } from '@/components/molecules/CandidateMetaFields'
 
 type Props = {
   candidate: Candidate
   selected?: boolean
   onToggleSelect: () => void
   onOpen: () => void
-}
-
-function formatDate(value: string, locale: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(date)
 }
 
 function truncate(text: string, max = 140) {
@@ -33,7 +25,7 @@ export function CandidateCard({
   onToggleSelect,
   onOpen,
 }: Props) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const fields = toListFields(candidate)
 
   return (
@@ -42,11 +34,12 @@ export function CandidateCard({
       tabIndex={0}
       aria-pressed={selected}
       aria-label={t('candidates.selectCandidate', { name: fields.name })}
-      className={`cursor-pointer rounded-2xl border bg-white p-5 text-left shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-teal-700/40 ${
+      className={cn(
+        'cursor-pointer rounded-2xl border bg-white p-5 text-left shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-teal-700/40',
         selected
           ? 'border-teal-700/40 ring-2 ring-teal-700/70 shadow-[0_0_0_4px_rgba(15,118,110,0.15)]'
-          : 'border-slate-200 hover:border-slate-300'
-      }`}
+          : 'border-slate-200 hover:border-slate-300',
+      )}
       onClick={onToggleSelect}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -57,11 +50,12 @@ export function CandidateCard({
     >
       <div className="flex items-start gap-3">
         <span
-          className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[11px] ${
+          className={cn(
+            'mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[11px]',
             selected
               ? 'border-teal-800 bg-teal-800 text-white'
-              : 'border-slate-300 bg-white text-transparent'
-          }`}
+              : 'border-slate-300 bg-white text-transparent',
+          )}
           aria-hidden="true"
         >
           ✓
@@ -83,28 +77,7 @@ export function CandidateCard({
             />
           </div>
 
-          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                {t('candidates.fields.dateApplied')}
-              </dt>
-              <dd className="mt-1 text-slate-800">
-                {formatDate(fields.date_applied, i18n.language)}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                {t('candidates.fields.reviewed')}
-              </dt>
-              <dd className="mt-1">
-                <ReviewedBadge
-                  reviewed={fields.reviewed}
-                  needsLabel={t('candidates.needsReview')}
-                  reviewedLabel={t('candidates.reviewedDone')}
-                />
-              </dd>
-            </div>
-          </dl>
+          <CandidateMetaFields fields={fields} />
 
           {fields.description ? (
             <p className="mt-4 text-sm leading-relaxed text-slate-700">

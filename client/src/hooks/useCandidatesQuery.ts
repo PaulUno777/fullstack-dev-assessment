@@ -6,9 +6,9 @@ import {
   markCandidateReviewed,
   updateCandidateStatus,
   type ListCandidatesParams,
-} from '../api/candidates'
-import type { CandidateStatus } from '../domain/candidate'
-import { useCandidatesUiStore } from '../state/candidatesUiStore'
+} from '@/api/candidates'
+import type { CandidateStatus } from '@/domain/candidate'
+import { useCandidatesUiStore } from '@/state/candidatesUiStore'
 
 export function useCandidatesListQuery() {
   const { i18n } = useTranslation()

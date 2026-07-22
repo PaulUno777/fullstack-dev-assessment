@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useCandidatesUiStore } from '../../state/candidatesUiStore'
-import { Input } from '../atoms/Input'
+import { Input } from '@/components/atoms/Input'
+import { useCandidatesUiStore } from '@/state/candidatesUiStore'
 
 export function SearchField() {
   const { t } = useTranslation()
@@ -15,7 +15,7 @@ export function SearchField() {
   }, [draft, setQ])
 
   return (
-    <label className="flex w-full flex-col gap-1 text-xs font-medium text-slate-600 md:max-w-[16rem]">
+    <label className="flex w-full flex-col gap-1 text-xs font-medium text-slate-600 md:max-w-48">
       {t('candidates.search')}
       <Input
         value={draft}

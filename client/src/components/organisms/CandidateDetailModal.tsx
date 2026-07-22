@@ -1,10 +1,11 @@
 import { useEffect, useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Candidate } from '../../domain/candidate'
-import { toListFields } from '../../domain/candidate'
-import { ReviewedBadge, StatusBadge } from '../atoms/Badge'
-import { StatusActions } from '../molecules/StatusActions'
-import { Button } from '../atoms/Button'
+import { ReviewedBadge, StatusBadge } from '@/components/atoms/Badge'
+import { Button } from '@/components/atoms/Button'
+import { CandidateMetaFields } from '@/components/molecules/CandidateMetaFields'
+import { StatusActions } from '@/components/molecules/StatusActions'
+import type { Candidate } from '@/domain/candidate'
+import { toListFields } from '@/domain/candidate'
 
 type Props = {
   candidate: Candidate | null
@@ -15,16 +16,6 @@ type Props = {
   onReject: () => void
 }
 
-function formatDate(value: string, locale: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(date)
-}
-
 export function CandidateDetailModal({
   candidate,
   busy,
@@ -33,7 +24,7 @@ export function CandidateDetailModal({
   onAccept,
   onReject,
 }: Props) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const titleId = useId()
 
   useEffect(() => {
@@ -94,28 +85,7 @@ export function CandidateDetailModal({
           </div>
         </div>
 
-        <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-          <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-              {t('candidates.fields.dateApplied')}
-            </dt>
-            <dd className="mt-1 text-slate-800">
-              {formatDate(fields.date_applied, i18n.language)}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-              {t('candidates.fields.reviewed')}
-            </dt>
-            <dd className="mt-1">
-              <ReviewedBadge
-                reviewed={fields.reviewed}
-                needsLabel={t('candidates.needsReview')}
-                reviewedLabel={t('candidates.reviewedDone')}
-              />
-            </dd>
-          </div>
-        </dl>
+        <CandidateMetaFields fields={fields} />
 
         {fields.description ? (
           <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">

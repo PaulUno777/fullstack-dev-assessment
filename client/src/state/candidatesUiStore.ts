@@ -1,40 +1,40 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CandidateStatus } from '../domain/candidate'
+import type { CandidateStatus } from '@/domain/candidate'
 
-export type SortField = 'date_applied'
-export type SortDirection = 'asc' | 'desc'
+type SortField = "date_applied";
+export type SortDirection = "asc" | "desc";
 
 type CandidatesUiState = {
-  page: number
-  perPage: number
-  statuses: CandidateStatus[]
-  q: string
-  sort: SortField
-  direction: SortDirection
-  selectedIds: number[]
-  selectedStatusById: Record<number, CandidateStatus>
-  setPage: (page: number) => void
-  setStatuses: (statuses: CandidateStatus[]) => void
-  setQ: (q: string) => void
-  setSort: (sort: SortField) => void
-  setDirection: (direction: SortDirection) => void
-  toggleSelected: (id: number, status: CandidateStatus) => void
-  setSelectedIds: (ids: number[]) => void
-  clearSelection: () => void
-  resetFilters: () => void
-}
+  page: number;
+  perPage: number;
+  statuses: CandidateStatus[];
+  q: string;
+  sort: SortField;
+  direction: SortDirection;
+  selectedIds: number[];
+  selectedStatusById: Record<number, CandidateStatus>;
+  setPage: (page: number) => void;
+  setStatuses: (statuses: CandidateStatus[]) => void;
+  setQ: (q: string) => void;
+  setSort: (sort: SortField) => void;
+  setDirection: (direction: SortDirection) => void;
+  toggleSelected: (id: number, status: CandidateStatus) => void;
+  setSelectedIds: (ids: number[]) => void;
+  clearSelection: () => void;
+  resetFilters: () => void;
+};
 
 const initialFilters = {
   page: 1,
   perPage: 10,
   statuses: [] as CandidateStatus[],
-  q: '',
-  sort: 'date_applied' as SortField,
-  direction: 'desc' as SortDirection,
+  q: "",
+  sort: "date_applied" as SortField,
+  direction: "desc" as SortDirection,
   selectedIds: [] as number[],
   selectedStatusById: {} as Record<number, CandidateStatus>,
-}
+};
 
 export const useCandidatesUiStore = create<CandidatesUiState>()(
   persist(
@@ -48,30 +48,29 @@ export const useCandidatesUiStore = create<CandidatesUiState>()(
       toggleSelected: (id, status) =>
         set((state) => {
           if (state.selectedIds.includes(id)) {
-            const selectedStatusById = { ...state.selectedStatusById }
-            delete selectedStatusById[id]
+            const selectedStatusById = { ...state.selectedStatusById };
+            delete selectedStatusById[id];
             return {
               selectedIds: state.selectedIds.filter((item) => item !== id),
               selectedStatusById,
-            }
+            };
           }
           return {
             selectedIds: [...state.selectedIds, id],
             selectedStatusById: { ...state.selectedStatusById, [id]: status },
-          }
+          };
         }),
       setSelectedIds: (ids) =>
         set((state) => {
-          const selectedStatusById: Record<number, CandidateStatus> = {}
+          const selectedStatusById: Record<number, CandidateStatus> = {};
           for (const id of ids) {
             if (state.selectedStatusById[id]) {
-              selectedStatusById[id] = state.selectedStatusById[id]
+              selectedStatusById[id] = state.selectedStatusById[id];
             }
           }
-          return { selectedIds: ids, selectedStatusById }
+          return { selectedIds: ids, selectedStatusById };
         }),
-      clearSelection: () =>
-        set({ selectedIds: [], selectedStatusById: {} }),
+      clearSelection: () => set({ selectedIds: [], selectedStatusById: {} }),
       resetFilters: () =>
         set({
           page: initialFilters.page,
@@ -83,7 +82,7 @@ export const useCandidatesUiStore = create<CandidatesUiState>()(
         }),
     }),
     {
-      name: 'candidates.ui',
+      name: "candidates.ui",
       partialize: (state) => ({
         statuses: state.statuses,
         sort: state.sort,
@@ -91,4 +90,4 @@ export const useCandidatesUiStore = create<CandidatesUiState>()(
       }),
     },
   ),
-)
+);

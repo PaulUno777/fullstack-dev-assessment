@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Dropdown } from './molecules/Dropdown'
+import { Dropdown } from '@/components/molecules/Dropdown'
 
 const LOCALES = ['en', 'de', 'fr'] as const
 
@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
   return (
     <Dropdown
       align="right"
-      className="w-[10.5rem]"
+      className="w-42"
       trigger={
         <span className="flex items-center gap-2">
           <GlobeIcon />

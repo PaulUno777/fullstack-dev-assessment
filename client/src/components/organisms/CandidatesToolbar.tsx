@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useCandidatesUiStore } from '../../state/candidatesUiStore'
-import { Button } from '../atoms/Button'
-import { SearchField } from '../molecules/SearchField'
-import { SortControls } from '../molecules/SortControls'
-import { MultiSelectDropdown } from '../molecules/MultiSelectDropdown'
+import { Button } from '@/components/atoms/Button'
+import { MultiSelectDropdown } from '@/components/molecules/MultiSelectDropdown'
+import { SearchField } from '@/components/molecules/SearchField'
+import { SortControls } from '@/components/molecules/SortControls'
+import { cn } from '@/lib/cn'
+import { useCandidatesUiStore } from '@/state/candidatesUiStore'
 
 type Props = {
   page?: number
@@ -28,14 +29,15 @@ export function CandidatesToolbar({
 
   return (
     <div className="flex flex-wrap items-end gap-2">
-      <div className="w-full min-w-0 md:w-auto md:max-w-[16rem] md:flex-none">
+      <div className="w-full min-w-0 md:w-auto md:max-w-72 md:flex-none">
         <SearchField />
       </div>
 
       <div
-        className={`${
-          filtersOpen ? 'flex' : 'hidden'
-        } w-full flex-wrap items-end gap-2 md:flex md:w-auto`}
+        className={cn(
+          'w-full flex-wrap items-end gap-2 md:flex md:w-auto',
+          filtersOpen ? 'flex' : 'hidden',
+        )}
       >
         <MultiSelectDropdown value={statuses} onChange={setStatuses} />
         <SortControls />
@@ -64,7 +66,7 @@ export function CandidatesToolbar({
         </p>
         <Button
           variant="secondary"
-          className="!px-2.5 font-mono text-base leading-none"
+          className="px-2.5! font-mono text-base leading-none"
           disabled={!canPaginate || page <= 1}
           aria-label={t('candidates.prev')}
           onClick={() => setPage(page - 1)}
@@ -73,7 +75,7 @@ export function CandidatesToolbar({
         </Button>
         <Button
           variant="secondary"
-          className="!px-2.5 font-mono text-base leading-none"
+          className="px-2.5! font-mono text-base leading-none"
           disabled={!canPaginate || page >= totalPages}
           aria-label={t('candidates.next')}
           onClick={() => setPage(page + 1)}

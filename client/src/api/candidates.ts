@@ -1,4 +1,4 @@
-import type { Candidate, CandidateStatus } from '../domain/candidate'
+import type { Candidate, CandidateStatus } from '@/domain/candidate'
 
 export type ListMeta = {
   page: number

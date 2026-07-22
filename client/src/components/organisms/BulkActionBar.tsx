@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Button } from '../atoms/Button'
+import { Button } from '@/components/atoms/Button'
 
 type Props = {
   selectedCount: number
@@ -37,7 +37,7 @@ export function BulkActionBar({
           <div className="flex flex-wrap gap-2">
             <Button
               variant="secondary"
-              className="!bg-white !text-teal-900"
+              className="bg-white! text-teal-900!"
               disabled={busy || !canAct}
               onClick={onAccept}
             >
@@ -52,7 +52,7 @@ export function BulkActionBar({
             </Button>
             <Button
               variant="ghost"
-              className="!text-teal-50 hover:!bg-teal-800"
+              className="text-teal-50! hover:bg-teal-800!"
               disabled={busy}
               onClick={onClear}
             >

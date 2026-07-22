@@ -1,24 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ApiError } from '../api/candidates'
+import { ApiError } from '@/api/candidates'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { ConfirmDialog } from '@/components/atoms/ConfirmDialog'
+import { BulkActionBar } from '@/components/organisms/BulkActionBar'
+import { CandidateCard } from '@/components/organisms/CandidateCard'
+import { CandidateDetailModal } from '@/components/organisms/CandidateDetailModal'
+import { CandidatesToolbar } from '@/components/organisms/CandidatesToolbar'
+import {
+  bulkConfirmCopy,
+  partitionSelectedForBulk,
+} from '@/domain/bulkSelection'
+import type { Candidate } from '@/domain/candidate'
 import {
   useBulkUpdateCandidateStatusMutation,
   useCandidatesListQuery,
   useMarkCandidateReviewedMutation,
   useUpdateCandidateStatusMutation,
-} from '../hooks/useCandidatesQuery'
-import { LanguageSwitcher } from '../components/LanguageSwitcher'
-import { ConfirmDialog } from '../components/atoms/ConfirmDialog'
-import { CandidatesToolbar } from '../components/organisms/CandidatesToolbar'
-import { CandidateCard } from '../components/organisms/CandidateCard'
-import { CandidateDetailModal } from '../components/organisms/CandidateDetailModal'
-import { BulkActionBar } from '../components/organisms/BulkActionBar'
-import {
-  bulkConfirmCopy,
-  partitionSelectedForBulk,
-} from '../domain/bulkSelection'
-import type { Candidate } from '../domain/candidate'
-import { useCandidatesUiStore } from '../state/candidatesUiStore'
+} from '@/hooks/useCandidatesQuery'
+import { useCandidatesUiStore } from '@/state/candidatesUiStore'
 
 type PendingAction = {
   ids: number[]
@@ -160,11 +160,11 @@ export function CandidatesPage() {
 
   return (
     <div className="relative min-h-screen bg-[#f3efe6] text-slate-900">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(180,83,9,0.1),_transparent_35%)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(15,118,110,0.12),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(180,83,9,0.1),transparent_35%)]" />
 
-      <div className="sticky top-0 z-50 border-b border-teal-900/10 bg-teal-900/[0.12] shadow-sm backdrop-blur-md">
+      <div className="sticky top-0 z-50 border-b border-teal-900/10 bg-teal-900/12 shadow-sm backdrop-blur-md">
         <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
-          <header className="relative z-[60] mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-end sm:justify-between">
+          <header className="relative z-60 mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-900/70">
                 {t('app.brand')}
@@ -176,7 +176,7 @@ export function CandidatesPage() {
                 {t('app.subtitle')}
               </p>
             </div>
-            <div className="relative z-[70] self-end sm:self-auto">
+            <div className="relative z-70 self-end sm:self-auto">
               <LanguageSwitcher />
             </div>
           </header>
