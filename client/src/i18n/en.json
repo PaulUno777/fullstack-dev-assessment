@@ -16,12 +16,6 @@
     "filterStatus": "Status",
     "allStatuses": "All",
     "clearStatusFilter": "Clear status filter",
-    "filterReviewed": "Review status",
-    "reviewedFilters": {
-      "all": "All",
-      "needs_review": "Needs review",
-      "reviewed": "Reviewed"
-    },
     "needsReview": "Needs review",
     "reviewedDone": "Reviewed",
     "reviewApplication": "Review application",
@@ -29,6 +23,7 @@
     "showFilters": "Filters",
     "hideFilters": "Hide filters",
     "sortBy": "Sort by",
+    "sortDateApplied": "Date applied",
     "direction": "Direction",
     "asc": "Ascending",
     "desc": "Descending",
@@ -57,6 +52,7 @@
     "prev": "Previous",
     "next": "Next",
     "pageOf": "Page {{page}} of {{totalPages}}",
+    "pageMeta": "Page {{page}} of {{totalPages}} · {{total}}",
     "totalCount": "{{count}} candidates",
     "yearsExp": "{{count}} years of experience",
     "fields": {

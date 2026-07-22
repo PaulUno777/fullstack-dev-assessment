@@ -5,7 +5,6 @@ import { Button } from '../atoms/Button'
 import { SearchField } from '../molecules/SearchField'
 import { SortControls } from '../molecules/SortControls'
 import { MultiSelectDropdown } from '../molecules/MultiSelectDropdown'
-import { ReviewedFilterChips } from '../molecules/ReviewedFilterChips'
 
 type Props = {
   page?: number
@@ -25,13 +24,23 @@ export function CandidatesToolbar({
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   const canPaginate = totalPages > 1
+  const displayPages = Math.max(totalPages, total > 0 ? 1 : 0)
 
   return (
-    <section className="sticky top-0 z-20 -mx-4 border-b border-slate-200/80 bg-[#f3efe6]/95 px-4 py-3 shadow-sm backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-end gap-2 md:gap-3">
-          <div className="min-w-[12rem] flex-1">
+    <section className="sticky top-0 z-20 -mx-4 border-b border-slate-200/70 bg-[#f3efe6] px-4 py-3 shadow-sm sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="min-w-[10rem] flex-1 basis-[12rem]">
             <SearchField />
+          </div>
+
+          <div
+            className={`${
+              filtersOpen ? 'flex' : 'hidden'
+            } w-full flex-wrap items-end gap-2 md:flex md:w-auto`}
+          >
+            <MultiSelectDropdown value={statuses} onChange={setStatuses} />
+            <SortControls />
           </div>
 
           <Button
@@ -45,37 +54,35 @@ export function CandidatesToolbar({
               : t('candidates.showFilters')}
           </Button>
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <p className="text-xs text-slate-600 sm:text-sm">
-              {totalPages > 0
-                ? `${t('candidates.pageOf', { page, totalPages })} · ${t('candidates.totalCount', { count: total })}`
-                : t('candidates.totalCount', { count: total })}
+          <div className="ml-auto flex shrink-0 items-center gap-1.5">
+            <p className="whitespace-nowrap text-xs text-slate-600 sm:text-sm">
+              {displayPages > 0
+                ? t('candidates.pageMeta', {
+                    page: Math.max(page, 1),
+                    totalPages: displayPages,
+                    total,
+                  })
+                : t('candidates.pageMeta', { page: 1, totalPages: 1, total: 0 })}
             </p>
             <Button
               variant="secondary"
+              className="!px-2.5 font-mono text-base leading-none"
               disabled={!canPaginate || page <= 1}
+              aria-label={t('candidates.prev')}
               onClick={() => setPage(page - 1)}
             >
-              {t('candidates.prev')}
+              ‹
             </Button>
             <Button
               variant="secondary"
+              className="!px-2.5 font-mono text-base leading-none"
               disabled={!canPaginate || page >= totalPages}
+              aria-label={t('candidates.next')}
               onClick={() => setPage(page + 1)}
             >
-              {t('candidates.next')}
+              ›
             </Button>
           </div>
-        </div>
-
-        <div
-          className={`${
-            filtersOpen ? 'flex' : 'hidden'
-          } flex-col gap-3 md:flex md:flex-row md:flex-wrap md:items-end`}
-        >
-          <MultiSelectDropdown value={statuses} onChange={setStatuses} />
-          <ReviewedFilterChips />
-          <SortControls />
         </div>
       </div>
     </section>

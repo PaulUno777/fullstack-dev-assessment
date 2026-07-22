@@ -16,12 +16,6 @@
     "filterStatus": "Statut",
     "allStatuses": "Tous",
     "clearStatusFilter": "Effacer le filtre de statut",
-    "filterReviewed": "Statut d'examen",
-    "reviewedFilters": {
-      "all": "Tous",
-      "needs_review": "À examiner",
-      "reviewed": "Examiné"
-    },
     "needsReview": "À examiner",
     "reviewedDone": "Examiné",
     "reviewApplication": "Examiner la candidature",
@@ -29,6 +23,7 @@
     "showFilters": "Filtres",
     "hideFilters": "Masquer les filtres",
     "sortBy": "Trier par",
+    "sortDateApplied": "Date de candidature",
     "direction": "Direction",
     "asc": "Croissant",
     "desc": "Décroissant",
@@ -57,6 +52,7 @@
     "prev": "Précédent",
     "next": "Suivant",
     "pageOf": "Page {{page}} sur {{totalPages}}",
+    "pageMeta": "Page {{page}} sur {{totalPages}} · {{total}}",
     "totalCount": "{{count}} candidats",
     "yearsExp": "{{count}} ans d'expérience",
     "fields": {

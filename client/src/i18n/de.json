@@ -16,12 +16,6 @@
     "filterStatus": "Status",
     "allStatuses": "Alle",
     "clearStatusFilter": "Statusfilter löschen",
-    "filterReviewed": "Prüfstatus",
-    "reviewedFilters": {
-      "all": "Alle",
-      "needs_review": "Zu prüfen",
-      "reviewed": "Geprüft"
-    },
     "needsReview": "Zu prüfen",
     "reviewedDone": "Geprüft",
     "reviewApplication": "Bewerbung prüfen",
@@ -29,6 +23,7 @@
     "showFilters": "Filter",
     "hideFilters": "Filter ausblenden",
     "sortBy": "Sortieren nach",
+    "sortDateApplied": "Bewerbungsdatum",
     "direction": "Richtung",
     "asc": "Aufsteigend",
     "desc": "Absteigend",
@@ -57,6 +52,7 @@
     "prev": "Zurück",
     "next": "Weiter",
     "pageOf": "Seite {{page}} von {{totalPages}}",
+    "pageMeta": "Seite {{page}} von {{totalPages}} · {{total}}",
     "totalCount": "{{count}} Kandidaten",
     "yearsExp": "{{count}} Jahre Erfahrung",
     "fields": {

@@ -82,7 +82,7 @@ class CandidatesController < ApplicationController
   end
 
   def list_params
-    permitted = params.permit(:page, :per_page, :q, :sort, :direction, :reviewed)
+    permitted = params.permit(:page, :per_page, :q, :sort, :direction)
     # Scalar, CSV, or array (`status[]=pending&status[]=rejected`)
     permitted[:status] = params[:status] if params.key?(:status)
     permitted

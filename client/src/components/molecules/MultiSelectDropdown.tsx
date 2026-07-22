@@ -32,14 +32,18 @@ export function MultiSelectDropdown({ value, onChange }: Props) {
   }
 
   return (
-    <div className="flex min-w-[11rem] items-end gap-1">
+    <div className="flex min-w-[9rem] items-end gap-1">
       <Dropdown
-        label={t('candidates.filterStatus')}
         keepOpenOnSelect
         showChevron
         className="min-w-0 flex-1"
-        triggerClassName={active ? chipActive : chipIdle}
-        trigger={<span className="truncate">{triggerLabel}</span>}
+        triggerClassName={`${active ? chipActive : chipIdle} h-[38px]`}
+        trigger={
+          <span className="truncate" title={triggerLabel}>
+            <span className="sr-only">{t('candidates.filterStatus')}: </span>
+            {triggerLabel}
+          </span>
+        }
       >
         {ALL_STATUSES.map((status) => {
           const checked = value.includes(status)

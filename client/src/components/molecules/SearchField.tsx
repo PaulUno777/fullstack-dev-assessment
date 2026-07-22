@@ -15,7 +15,7 @@ export function SearchField() {
   }, [draft, setQ])
 
   return (
-    <label className="flex w-full flex-col gap-1 text-xs font-medium text-slate-600 sm:max-w-xs">
+    <label className="flex w-full flex-col gap-1 text-xs font-medium text-slate-600">
       {t('candidates.search')}
       <Input
         value={draft}

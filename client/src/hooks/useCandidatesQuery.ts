@@ -9,20 +9,11 @@ import {
 import type { CandidateStatus } from '../domain/candidate'
 import { useCandidatesUiStore } from '../state/candidatesUiStore'
 
-function reviewedParam(
-  filter: 'all' | 'needs_review' | 'reviewed',
-): boolean | undefined {
-  if (filter === 'needs_review') return false
-  if (filter === 'reviewed') return true
-  return undefined
-}
-
 export function useCandidatesListQuery() {
   const { i18n } = useTranslation()
   const page = useCandidatesUiStore((s) => s.page)
   const perPage = useCandidatesUiStore((s) => s.perPage)
   const statuses = useCandidatesUiStore((s) => s.statuses)
-  const reviewedFilter = useCandidatesUiStore((s) => s.reviewedFilter)
   const q = useCandidatesUiStore((s) => s.q)
   const sort = useCandidatesUiStore((s) => s.sort)
   const direction = useCandidatesUiStore((s) => s.direction)
@@ -31,7 +22,6 @@ export function useCandidatesListQuery() {
     page,
     per_page: perPage,
     status: statuses.length > 0 ? statuses : undefined,
-    reviewed: reviewedParam(reviewedFilter),
     q: q.trim() || undefined,
     sort,
     direction,

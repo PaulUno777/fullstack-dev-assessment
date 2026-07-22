@@ -64,26 +64,6 @@ class CandidatesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, body["data"].length
   end
 
-  test "index filters by reviewed true" do
-    get candidates_url, params: { reviewed: true }, headers: { "Accept" => "application/json" }
-
-    assert_response :success
-    body = JSON.parse(response.body)
-    assert_equal 1, body["data"].length
-    assert_equal true, body["data"].first["reviewed"]
-    assert_equal "Brian Patel", body["data"].first["name"]
-  end
-
-  test "index filters by reviewed false" do
-    get candidates_url, params: { reviewed: false }, headers: { "Accept" => "application/json" }
-
-    assert_response :success
-    body = JSON.parse(response.body)
-    assert_equal 1, body["data"].length
-    assert_equal false, body["data"].first["reviewed"]
-    assert_equal "Alan Cruz", body["data"].first["name"]
-  end
-
   test "index searches by name" do
     get candidates_url, params: { q: "brian" }, headers: { "Accept" => "application/json" }
 

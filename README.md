@@ -86,7 +86,7 @@ PLAN.md             Audit, scope extensions, traceability
 
 | Method | Path | Notes |
 |--------|------|--------|
-| `GET` | `/candidates` | `page`, `per_page`, `status` (single or CSV e.g. `pending,accepted`), `reviewed` (`true`/`false`), `q`, `sort`, `direction` |
+| `GET` | `/candidates` | `page`, `per_page`, `status` (single or CSV e.g. `pending,accepted`), `q`, `sort`, `direction` |
 | `GET` | `/candidates/:id` | Show |
 | `PATCH` | `/candidates/:id` | `{ "candidate": { "status": "accepted" } }` |
 | `PATCH` | `/candidates/bulk` | `{ "ids": [1,2], "status": "accepted" }` → `{ data, meta: { updated, failed }, errors }` |
@@ -99,7 +99,7 @@ Bulk reuses the same status lock rules as single update (`Candidates::UpdateStat
 
 ## UI extras (beyond the brief)
 
-Documented in [`PLAN.md`](./PLAN.md): multi-status filter, card selection + floating bulk bar + confirm, detail modal, sticky toolbar with pagination, reviewed filter + Review CTA, chip sort/filters, filter/sort/locale persistence, browser language detect. List UI stays **cards** (2 columns on large screens), not a table.
+Documented in [`PLAN.md`](./PLAN.md): multi-status filter, card selection + floating bulk bar + confirm, detail modal, sticky toolbar with pagination, Review CTA + reviewed badge, chip status filter + date sort, filter/sort/locale persistence, browser language detect. List UI stays **cards** (2 columns on large screens), not a table.
 
 ---
 
