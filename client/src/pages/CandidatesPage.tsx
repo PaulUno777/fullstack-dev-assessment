@@ -1,20 +1,59 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ApiError } from '../api/candidates'
 import {
+  useBulkUpdateCandidateStatusMutation,
   useCandidatesListQuery,
   useUpdateCandidateStatusMutation,
 } from '../hooks/useCandidatesQuery'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ConfirmDialog } from '../components/atoms/ConfirmDialog'
 import { CandidatesToolbar } from '../components/organisms/CandidatesToolbar'
 import { CandidateCard } from '../components/organisms/CandidateCard'
+import { CandidateDetailModal } from '../components/organisms/CandidateDetailModal'
+import { BulkActionBar } from '../components/organisms/BulkActionBar'
 import { Pagination } from '../components/organisms/Pagination'
+import {
+  bulkConfirmCopy,
+  partitionSelectedForBulk,
+} from '../domain/bulkSelection'
+import type { Candidate } from '../domain/candidate'
+import { useCandidatesUiStore } from '../state/candidatesUiStore'
+
+type PendingAction = {
+  ids: number[]
+  status: 'accepted' | 'rejected'
+  lockedCount: number
+}
 
 export function CandidatesPage() {
   const { t } = useTranslation()
   const listQuery = useCandidatesListQuery()
   const mutation = useUpdateCandidateStatusMutation()
+  const bulkMutation = useBulkUpdateCandidateStatusMutation()
+  const selectedIds = useCandidatesUiStore((s) => s.selectedIds)
+  const toggleSelected = useCandidatesUiStore((s) => s.toggleSelected)
+  const clearSelection = useCandidatesUiStore((s) => s.clearSelection)
   const [rowErrors, setRowErrors] = useState<Record<number, string>>({})
+  const [detailCandidate, setDetailCandidate] = useState<Candidate | null>(null)
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
+  const [confirmBusy, setConfirmBusy] = useState(false)
+
+  const candidates = listQuery.data?.data ?? []
+
+  const partition = useMemo(
+    () => partitionSelectedForBulk(candidates, selectedIds),
+    [candidates, selectedIds],
+  )
+
+  function requestBulk(status: 'accepted' | 'rejected') {
+    if (partition.pendingIds.length === 0) return
+    setPendingAction({
+      ids: partition.pendingIds,
+      status,
+      lockedCount: partition.lockedCount,
+    })
+  }
 
   async function changeStatus(
     id: number,
@@ -27,6 +66,7 @@ export function CandidatesPage() {
     })
     try {
       await mutation.mutateAsync({ id, status })
+      setDetailCandidate(null)
     } catch (error) {
       const message =
         error instanceof ApiError
@@ -36,10 +76,46 @@ export function CandidatesPage() {
     }
   }
 
+  async function applyPendingAction() {
+    if (!pendingAction) return
+    setConfirmBusy(true)
+    try {
+      await bulkMutation.mutateAsync({
+        ids: pendingAction.ids,
+        status: pendingAction.status,
+      })
+      clearSelection()
+      setPendingAction(null)
+      setDetailCandidate(null)
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : t('candidates.unknownError')
+      setRowErrors((prev) => {
+        const next = { ...prev }
+        for (const id of pendingAction.ids) next[id] = message
+        return next
+      })
+      setPendingAction(null)
+    } finally {
+      setConfirmBusy(false)
+    }
+  }
+
+  const confirmCopy = pendingAction
+    ? bulkConfirmCopy({
+        action: pendingAction.status,
+        pendingCount: pendingAction.ids.length,
+        lockedCount: pendingAction.lockedCount,
+        t,
+      })
+    : null
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#f3efe6] text-slate-900">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(180,83,9,0.1),_transparent_35%)]" />
-      <div className="relative mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-5xl px-4 py-10 pb-28 sm:px-6 lg:px-8">
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-900/70">
@@ -81,15 +157,14 @@ export function CandidatesPage() {
             </p>
           ) : null}
 
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {listQuery.data?.data.map((candidate) => (
               <CandidateCard
                 key={candidate.id}
                 candidate={candidate}
-                busy={mutation.isPending}
-                errorMessage={rowErrors[candidate.id]}
-                onAccept={() => void changeStatus(candidate.id, 'accepted')}
-                onReject={() => void changeStatus(candidate.id, 'rejected')}
+                selected={selectedIds.includes(candidate.id)}
+                onToggleSelect={() => toggleSelected(candidate.id)}
+                onOpen={() => setDetailCandidate(candidate)}
               />
             ))}
           </div>
@@ -103,6 +178,44 @@ export function CandidatesPage() {
           ) : null}
         </div>
       </div>
+
+      <BulkActionBar
+        selectedCount={selectedIds.length}
+        actionableCount={partition.pendingIds.length}
+        busy={bulkMutation.isPending || confirmBusy}
+        onAccept={() => requestBulk('accepted')}
+        onReject={() => requestBulk('rejected')}
+        onClear={clearSelection}
+      />
+
+      <CandidateDetailModal
+        candidate={detailCandidate}
+        busy={mutation.isPending}
+        errorMessage={
+          detailCandidate ? rowErrors[detailCandidate.id] : undefined
+        }
+        onClose={() => setDetailCandidate(null)}
+        onAccept={() => {
+          if (detailCandidate) void changeStatus(detailCandidate.id, 'accepted')
+        }}
+        onReject={() => {
+          if (detailCandidate) void changeStatus(detailCandidate.id, 'rejected')
+        }}
+      />
+
+      <ConfirmDialog
+        open={Boolean(pendingAction && confirmCopy)}
+        title={confirmCopy?.title ?? ''}
+        message={confirmCopy?.message ?? ''}
+        confirmLabel={t('candidates.confirm')}
+        cancelLabel={t('candidates.cancel')}
+        variant={pendingAction?.status === 'rejected' ? 'danger' : 'primary'}
+        busy={confirmBusy}
+        onCancel={() => {
+          if (!confirmBusy) setPendingAction(null)
+        }}
+        onConfirm={() => void applyPendingAction()}
+      />
     </div>
   )
 }

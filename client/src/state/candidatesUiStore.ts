@@ -11,11 +11,15 @@ type CandidatesUiState = {
   q: string
   sort: SortField
   direction: SortDirection
+  selectedIds: number[]
   setPage: (page: number) => void
   setStatuses: (statuses: CandidateStatus[]) => void
   setQ: (q: string) => void
   setSort: (sort: SortField) => void
   setDirection: (direction: SortDirection) => void
+  toggleSelected: (id: number) => void
+  setSelectedIds: (ids: number[]) => void
+  clearSelection: () => void
   resetFilters: () => void
 }
 
@@ -26,6 +30,7 @@ const initialFilters = {
   q: '',
   sort: 'date_applied' as SortField,
   direction: 'desc' as SortDirection,
+  selectedIds: [] as number[],
 }
 
 export const useCandidatesUiStore = create<CandidatesUiState>((set) => ({
@@ -35,5 +40,21 @@ export const useCandidatesUiStore = create<CandidatesUiState>((set) => ({
   setQ: (q) => set({ q, page: 1 }),
   setSort: (sort) => set({ sort, page: 1 }),
   setDirection: (direction) => set({ direction, page: 1 }),
-  resetFilters: () => set({ ...initialFilters }),
+  toggleSelected: (id) =>
+    set((state) => ({
+      selectedIds: state.selectedIds.includes(id)
+        ? state.selectedIds.filter((item) => item !== id)
+        : [...state.selectedIds, id],
+    })),
+  setSelectedIds: (ids) => set({ selectedIds: ids }),
+  clearSelection: () => set({ selectedIds: [] }),
+  resetFilters: () =>
+    set({
+      page: initialFilters.page,
+      perPage: initialFilters.perPage,
+      statuses: initialFilters.statuses,
+      q: initialFilters.q,
+      sort: initialFilters.sort,
+      direction: initialFilters.direction,
+    }),
 }))
