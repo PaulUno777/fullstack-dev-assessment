@@ -2,7 +2,7 @@ import { useEffect, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Candidate } from '../../domain/candidate'
 import { toListFields } from '../../domain/candidate'
-import { StatusBadge } from '../atoms/Badge'
+import { ReviewedBadge, StatusBadge } from '../atoms/Badge'
 import { StatusActions } from '../molecules/StatusActions'
 import { Button } from '../atoms/Button'
 
@@ -78,10 +78,15 @@ export function CandidateDetailModal({
               {t('candidates.yearsExp', { count: fields.years_exp })}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <StatusBadge
               status={fields.status}
               label={t(`candidates.statuses.${fields.status}`)}
+            />
+            <ReviewedBadge
+              reviewed={fields.reviewed}
+              needsLabel={t('candidates.needsReview')}
+              reviewedLabel={t('candidates.reviewedDone')}
             />
             <Button variant="ghost" disabled={busy} onClick={onClose}>
               {t('candidates.close')}
@@ -102,8 +107,12 @@ export function CandidateDetailModal({
             <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
               {t('candidates.fields.reviewed')}
             </dt>
-            <dd className="mt-1 text-slate-800">
-              {fields.reviewed ? t('candidates.yes') : t('candidates.no')}
+            <dd className="mt-1">
+              <ReviewedBadge
+                reviewed={fields.reviewed}
+                needsLabel={t('candidates.needsReview')}
+                reviewedLabel={t('candidates.reviewedDone')}
+              />
             </dd>
           </div>
         </dl>

@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import type { Candidate } from '../../domain/candidate'
 import { toListFields } from '../../domain/candidate'
-import { StatusBadge } from '../atoms/Badge'
+import { ReviewedBadge, StatusBadge } from '../atoms/Badge'
+import { Button } from '../atoms/Button'
 
 type Props = {
   candidate: Candidate
@@ -37,26 +38,36 @@ export function CandidateCard({
 
   return (
     <article
-      className={`rounded-xl border bg-white p-5 shadow-sm transition ${
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      aria-label={t('candidates.selectCandidate', { name: fields.name })}
+      className={`cursor-pointer rounded-2xl border bg-white p-5 text-left shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-teal-700/40 ${
         selected
           ? 'border-teal-700/40 ring-2 ring-teal-700/70 shadow-[0_0_0_4px_rgba(15,118,110,0.15)]'
-          : 'border-slate-200'
+          : 'border-slate-200 hover:border-slate-300'
       }`}
+      onClick={onToggleSelect}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onToggleSelect()
+        }
+      }}
     >
       <div className="flex items-start gap-3">
-        <input
-          type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-slate-300 text-teal-800 focus:ring-teal-700"
-          checked={selected}
-          onChange={onToggleSelect}
-          onClick={(event) => event.stopPropagation()}
-          aria-label={t('candidates.selectCandidate', { name: fields.name })}
-        />
-        <button
-          type="button"
-          className="min-w-0 flex-1 text-left"
-          onClick={onOpen}
+        <span
+          className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[11px] ${
+            selected
+              ? 'border-teal-800 bg-teal-800 text-white'
+              : 'border-slate-300 bg-white text-transparent'
+          }`}
+          aria-hidden="true"
         >
+          ✓
+        </span>
+
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="font-display text-xl font-semibold text-slate-900">
@@ -66,10 +77,12 @@ export function CandidateCard({
                 {t('candidates.yearsExp', { count: fields.years_exp })}
               </p>
             </div>
-            <StatusBadge
-              status={fields.status}
-              label={t(`candidates.statuses.${fields.status}`)}
-            />
+            <div className="flex flex-col items-end gap-2">
+              <StatusBadge
+                status={fields.status}
+                label={t(`candidates.statuses.${fields.status}`)}
+              />
+            </div>
           </div>
 
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -85,8 +98,12 @@ export function CandidateCard({
               <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 {t('candidates.fields.reviewed')}
               </dt>
-              <dd className="mt-1 text-slate-800">
-                {fields.reviewed ? t('candidates.yes') : t('candidates.no')}
+              <dd className="mt-1">
+                <ReviewedBadge
+                  reviewed={fields.reviewed}
+                  needsLabel={t('candidates.needsReview')}
+                  reviewedLabel={t('candidates.reviewedDone')}
+                />
               </dd>
             </div>
           </dl>
@@ -100,7 +117,31 @@ export function CandidateCard({
               {t('candidates.noDescription')}
             </p>
           )}
-        </button>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {!fields.reviewed ? (
+              <Button
+                variant="primary"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onOpen()
+                }}
+              >
+                {t('candidates.reviewApplication')}
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onOpen()
+                }}
+              >
+                {t('candidates.viewDetails')}
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </article>
   )
