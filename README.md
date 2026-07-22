@@ -41,11 +41,11 @@ cd client && pnpm test && pnpm build
 
 | Area | Implementation |
 |------|----------------|
-| API | Rails 8.1 JSON API — list / show / update status |
+| API | Rails 8.1 JSON API — list / show / update status / bulk update |
 | Rules | Pending → accepted/rejected sets `reviewed=true`; final statuses locked |
 | Client | Vite + React 19 + TypeScript + Tailwind |
-| Data | TanStack Query (server cache) + Zustand (UI filters) |
-| i18n | EN / DE / FR (UI + API error messages via `Accept-Language`) |
+| Data | TanStack Query (server cache) + Zustand (UI filters, persisted) |
+| i18n | EN / DE / FR (UI + API error messages via `Accept-Language`; browser detect on first visit) |
 | CI | GitHub Actions — API tests + client test/lint/build |
 
 **CD:** intentionally omitted (local demo + Loom). No disposable cloud deploy for this assessment.
@@ -68,7 +68,7 @@ explain, test, and change.
 ## Project structure
 
 ```
-api/rails/          Rails API (services: StatusPolicy, UpdateStatus, ListQuery)
+api/rails/          Rails API (services: StatusPolicy, UpdateStatus, BulkUpdateStatus, ListQuery)
 client/src/
   api/              HTTP client
   domain/           Pure rules (canChangeStatus) + Vitest
@@ -86,11 +86,20 @@ PLAN.md             Audit, scope extensions, traceability
 
 | Method | Path | Notes |
 |--------|------|--------|
-| `GET` | `/candidates` | `page`, `per_page`, `status`, `q`, `sort`, `direction` |
+| `GET` | `/candidates` | `page`, `per_page`, `status` (single or CSV e.g. `pending,accepted`), `q`, `sort`, `direction` |
 | `GET` | `/candidates/:id` | Show |
 | `PATCH` | `/candidates/:id` | `{ "candidate": { "status": "accepted" } }` |
+| `PATCH` | `/candidates/bulk` | `{ "ids": [1,2], "status": "accepted" }` → `{ data, meta: { updated, failed }, errors }` |
 
 List response: `{ "data": [...], "meta": { page, per_page, total, total_pages } }`
+
+Bulk reuses the same status lock rules as single update (`Candidates::UpdateStatus`). Partial success returns `200` with per-id errors.
+
+---
+
+## UI extras (beyond the brief)
+
+Documented in [`PLAN.md`](./PLAN.md): multi-status filter, card selection + floating bulk bar + confirm, detail modal, sticky toolbar, filter/sort/locale persistence, browser language detect. List UI stays **cards** (2 columns on large screens), not a table.
 
 ---
 

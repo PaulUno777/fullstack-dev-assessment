@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { CandidateStatus } from '../domain/candidate'
 
 export type SortField = 'status' | 'date_applied'
@@ -33,28 +34,40 @@ const initialFilters = {
   selectedIds: [] as number[],
 }
 
-export const useCandidatesUiStore = create<CandidatesUiState>((set) => ({
-  ...initialFilters,
-  setPage: (page) => set({ page }),
-  setStatuses: (statuses) => set({ statuses, page: 1 }),
-  setQ: (q) => set({ q, page: 1 }),
-  setSort: (sort) => set({ sort, page: 1 }),
-  setDirection: (direction) => set({ direction, page: 1 }),
-  toggleSelected: (id) =>
-    set((state) => ({
-      selectedIds: state.selectedIds.includes(id)
-        ? state.selectedIds.filter((item) => item !== id)
-        : [...state.selectedIds, id],
-    })),
-  setSelectedIds: (ids) => set({ selectedIds: ids }),
-  clearSelection: () => set({ selectedIds: [] }),
-  resetFilters: () =>
-    set({
-      page: initialFilters.page,
-      perPage: initialFilters.perPage,
-      statuses: initialFilters.statuses,
-      q: initialFilters.q,
-      sort: initialFilters.sort,
-      direction: initialFilters.direction,
+export const useCandidatesUiStore = create<CandidatesUiState>()(
+  persist(
+    (set) => ({
+      ...initialFilters,
+      setPage: (page) => set({ page }),
+      setStatuses: (statuses) => set({ statuses, page: 1 }),
+      setQ: (q) => set({ q, page: 1 }),
+      setSort: (sort) => set({ sort, page: 1 }),
+      setDirection: (direction) => set({ direction, page: 1 }),
+      toggleSelected: (id) =>
+        set((state) => ({
+          selectedIds: state.selectedIds.includes(id)
+            ? state.selectedIds.filter((item) => item !== id)
+            : [...state.selectedIds, id],
+        })),
+      setSelectedIds: (ids) => set({ selectedIds: ids }),
+      clearSelection: () => set({ selectedIds: [] }),
+      resetFilters: () =>
+        set({
+          page: initialFilters.page,
+          perPage: initialFilters.perPage,
+          statuses: initialFilters.statuses,
+          q: initialFilters.q,
+          sort: initialFilters.sort,
+          direction: initialFilters.direction,
+        }),
     }),
-}))
+    {
+      name: 'candidates.ui',
+      partialize: (state) => ({
+        statuses: state.statuses,
+        sort: state.sort,
+        direction: state.direction,
+      }),
+    },
+  ),
+)
