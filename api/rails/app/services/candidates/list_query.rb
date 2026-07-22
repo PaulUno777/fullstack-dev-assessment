@@ -20,6 +20,7 @@ module Candidates
       scope = Candidate.all
       scope = scope.by_status(@params[:status])
       scope = scope.search_name(@params[:q])
+      scope = apply_reviewed_filter(scope)
       scope = scope.sorted_by(@params[:sort], @params[:direction])
 
       page = [ @params[:page].to_i, DEFAULT_PAGE ].max
@@ -39,6 +40,14 @@ module Candidates
         total: total,
         total_pages: total_pages
       )
+    end
+
+    private
+
+    def apply_reviewed_filter(scope)
+      return scope unless @params.key?(:reviewed) && !@params[:reviewed].nil? && @params[:reviewed] != ""
+
+      scope.where(reviewed: ActiveModel::Type::Boolean.new.cast(@params[:reviewed]))
     end
   end
 end
