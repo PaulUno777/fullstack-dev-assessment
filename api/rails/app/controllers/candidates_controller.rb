@@ -4,8 +4,16 @@ class CandidatesController < ApplicationController
   before_action :set_candidate, only: %i[show update]
 
   def index
-    candidates = Candidate.order(date_applied: :desc)
-    render json: { data: Candidates::Serializer.many(candidates) }
+    result = Candidates::ListQuery.call(list_params)
+    render json: {
+      data: Candidates::Serializer.many(result.records),
+      meta: {
+        page: result.page,
+        per_page: result.per_page,
+        total: result.total,
+        total_pages: result.total_pages
+      }
+    }
   end
 
   def show
@@ -39,5 +47,9 @@ class CandidatesController < ApplicationController
 
   def candidate_params
     params.require(:candidate).permit(:status)
+  end
+
+  def list_params
+    params.permit(:page, :per_page, :status, :q, :sort, :direction)
   end
 end

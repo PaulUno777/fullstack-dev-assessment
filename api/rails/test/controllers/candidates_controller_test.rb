@@ -23,13 +23,52 @@ class CandidatesControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "index returns json list" do
+  test "index returns json list with pagination meta" do
     get candidates_url, as: :json
 
     assert_response :success
     assert_equal "application/json; charset=utf-8", response.content_type
     body = JSON.parse(response.body)
     assert_equal 2, body["data"].length
+    assert_equal 1, body["meta"]["page"]
+    assert_equal 2, body["meta"]["total"]
+  end
+
+  test "index filters by status" do
+    get candidates_url, params: { status: "pending" }, headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 1, body["data"].length
+    assert_equal "pending", body["data"].first["status"]
+  end
+
+  test "index searches by name" do
+    get candidates_url, params: { q: "brian" }, headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 1, body["data"].length
+    assert_equal "Brian Patel", body["data"].first["name"]
+  end
+
+  test "index paginates results" do
+    get candidates_url, params: { page: 1, per_page: 1 }, headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 1, body["data"].length
+    assert_equal 2, body["meta"]["total"]
+    assert_equal 2, body["meta"]["total_pages"]
+  end
+
+  test "index sorts by status ascending" do
+    get candidates_url, params: { sort: "status", direction: "asc" }, headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    statuses = body["data"].map { |row| row["status"] }
+    assert_equal statuses.sort, statuses
   end
 
   test "show returns a candidate" do
