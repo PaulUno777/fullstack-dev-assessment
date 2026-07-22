@@ -9,8 +9,14 @@ type Props = {
   onChange: (next: CandidateStatus[]) => void
 }
 
+const chipIdle =
+  'inline-flex w-full items-center justify-between gap-2 rounded-2xl border border-dashed border-slate-300 bg-white/80 px-3 py-2 text-left text-sm text-slate-800 outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-teal-700/30'
+const chipActive =
+  'inline-flex w-full items-center justify-between gap-2 rounded-2xl border border-solid border-teal-700/50 bg-teal-50 px-3 py-2 text-left text-sm text-teal-950 ring-2 ring-teal-700/50 outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
+
 export function MultiSelectDropdown({ value, onChange }: Props) {
   const { t } = useTranslation()
+  const active = value.length > 0
 
   const triggerLabel =
     value.length === 0
@@ -30,7 +36,9 @@ export function MultiSelectDropdown({ value, onChange }: Props) {
       <Dropdown
         label={t('candidates.filterStatus')}
         keepOpenOnSelect
+        showChevron
         className="min-w-0 flex-1"
+        triggerClassName={active ? chipActive : chipIdle}
         trigger={<span className="truncate">{triggerLabel}</span>}
       >
         {ALL_STATUSES.map((status) => {
@@ -59,10 +67,10 @@ export function MultiSelectDropdown({ value, onChange }: Props) {
           )
         })}
       </Dropdown>
-      {value.length > 0 ? (
+      {active ? (
         <button
           type="button"
-          className="mb-[1px] rounded-md border border-slate-300 bg-white px-2 py-2 text-sm text-slate-600 hover:bg-slate-50"
+          className="mb-[1px] rounded-2xl border border-dashed border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-600 hover:bg-slate-50"
           aria-label={t('candidates.clearStatusFilter')}
           onClick={() => onChange([])}
         >

@@ -12,6 +12,8 @@ type Props = {
   children: ReactNode | ((api: { close: () => void }) => ReactNode)
   align?: 'left' | 'right'
   className?: string
+  triggerClassName?: string
+  showChevron?: boolean
   /** When true, clicks inside the panel do not auto-close (multi-select). */
   keepOpenOnSelect?: boolean
 }
@@ -22,6 +24,8 @@ export function Dropdown({
   children,
   align = 'left',
   className = '',
+  triggerClassName = '',
+  showChevron = true,
   keepOpenOnSelect = false,
 }: Props) {
   const [open, setOpen] = useState(false)
@@ -53,31 +57,36 @@ export function Dropdown({
   const content =
     typeof children === 'function' ? children({ close }) : children
 
+  const defaultTrigger =
+    'inline-flex w-full items-center justify-between gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-900 shadow-sm outline-none hover:bg-slate-50 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20'
+
   return (
     <div ref={rootRef} className={`relative ${className}`}>
       {label ? (
-        <span className="mb-1 block text-xs font-medium text-slate-600">
+        <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">
           {label}
         </span>
       ) : null}
       <button
         type="button"
-        className="inline-flex w-full items-center justify-between gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-900 shadow-sm outline-none hover:bg-slate-50 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+        className={triggerClassName || defaultTrigger}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
       >
         {trigger}
-        <span className="text-slate-400" aria-hidden="true">
-          ▾
-        </span>
+        {showChevron ? (
+          <span className="text-slate-400" aria-hidden="true">
+            ▾
+          </span>
+        ) : null}
       </button>
       {open ? (
         <div
           id={menuId}
           role="listbox"
-          className={`absolute z-30 mt-1 min-w-full overflow-hidden rounded-md border border-slate-200 bg-white py-1 shadow-lg ${
+          className={`absolute z-30 mt-1 min-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-lg ${
             align === 'right' ? 'right-0' : 'left-0'
           }`}
           onClick={() => {

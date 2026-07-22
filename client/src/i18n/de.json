@@ -16,6 +16,18 @@
     "filterStatus": "Status",
     "allStatuses": "Alle",
     "clearStatusFilter": "Statusfilter löschen",
+    "filterReviewed": "Prüfstatus",
+    "reviewedFilters": {
+      "all": "Alle",
+      "needs_review": "Zu prüfen",
+      "reviewed": "Geprüft"
+    },
+    "needsReview": "Zu prüfen",
+    "reviewedDone": "Geprüft",
+    "reviewApplication": "Bewerbung prüfen",
+    "viewDetails": "Details anzeigen",
+    "showFilters": "Filter",
+    "hideFilters": "Filter ausblenden",
     "sortBy": "Sortieren nach",
     "direction": "Richtung",
     "asc": "Aufsteigend",

@@ -11,6 +11,7 @@ export type ListCandidatesParams = {
   page?: number
   per_page?: number
   status?: CandidateStatus | CandidateStatus[] | ''
+  reviewed?: boolean
   q?: string
   sort?: 'status' | 'date_applied'
   direction?: 'asc' | 'desc'
@@ -66,6 +67,9 @@ export async function listCandidates(
     query.set('status', params.status.join(','))
   } else if (typeof params.status === 'string' && params.status) {
     query.set('status', params.status)
+  }
+  if (typeof params.reviewed === 'boolean') {
+    query.set('reviewed', String(params.reviewed))
   }
   if (params.q) query.set('q', params.q)
   if (params.sort) query.set('sort', params.sort)

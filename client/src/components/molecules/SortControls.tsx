@@ -4,15 +4,20 @@ import {
   type SortDirection,
   type SortField,
 } from '../../state/candidatesUiStore'
-import { Dropdown } from './Dropdown'
 
 function DirectionArrow({ direction }: { direction: SortDirection }) {
   return (
-    <span aria-hidden="true" className="font-mono text-base leading-none">
+    <span aria-hidden="true" className="font-mono text-sm leading-none">
       {direction === 'asc' ? '↑' : '↓'}
     </span>
   )
 }
+
+const chipBase =
+  'inline-flex items-center justify-between gap-2 rounded-2xl border border-dashed px-3 py-2 text-sm font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
+const chipIdle = 'border-slate-300 bg-white/80 text-slate-700 hover:bg-white'
+const chipActive =
+  'border-solid border-teal-700/50 bg-teal-50 text-teal-950 ring-2 ring-teal-700/50'
 
 export function SortControls() {
   const { t } = useTranslation()
@@ -21,65 +26,52 @@ export function SortControls() {
   const setSort = useCandidatesUiStore((s) => s.setSort)
   const setDirection = useCandidatesUiStore((s) => s.setDirection)
 
-  function chooseField(field: SortField, close: () => void) {
-    if (field === 'status') {
-      setSort('status')
-      close()
+  function activate(field: SortField) {
+    if (sort === field) {
+      setDirection(direction === 'asc' ? 'desc' : 'asc')
       return
     }
-    if (sort === 'date_applied') {
-      setDirection(direction === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSort('date_applied')
-    }
-    close()
+    setSort(field)
+    setDirection('desc')
   }
 
-  const triggerLabel =
-    sort === 'status'
-      ? t('candidates.fields.status')
-      : t('candidates.fields.dateApplied')
-
   return (
-    <Dropdown
-      label={t('candidates.sortBy')}
-      className="min-w-[12rem]"
-      trigger={
-        <span className="flex items-center gap-2">
-          <span>{triggerLabel}</span>
+    <div className="flex flex-col gap-1">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+        {t('candidates.sortBy')}
+      </span>
+      <div className="flex flex-wrap gap-2" role="group" aria-label={t('candidates.sortBy')}>
+        <button
+          type="button"
+          className={`${chipBase} ${sort === 'date_applied' ? chipActive : chipIdle}`}
+          aria-pressed={sort === 'date_applied'}
+          onClick={() => activate('date_applied')}
+        >
+          <span>{t('candidates.fields.dateApplied')}</span>
           {sort === 'date_applied' ? (
             <DirectionArrow direction={direction} />
-          ) : null}
-        </span>
-      }
-    >
-      {({ close }) => (
-        <>
-          <button
-            type="button"
-            role="option"
-            aria-selected={sort === 'date_applied'}
-            className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
-            onClick={() => chooseField('date_applied', close)}
-          >
-            <span>{t('candidates.fields.dateApplied')}</span>
-            <DirectionArrow
-              direction={
-                sort === 'date_applied' ? direction : 'desc'
-              }
-            />
-          </button>
-          <button
-            type="button"
-            role="option"
-            aria-selected={sort === 'status'}
-            className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50"
-            onClick={() => chooseField('status', close)}
-          >
-            {t('candidates.fields.status')}
-          </button>
-        </>
-      )}
-    </Dropdown>
+          ) : (
+            <span className="text-slate-300" aria-hidden="true">
+              ↓
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          className={`${chipBase} ${sort === 'status' ? chipActive : chipIdle}`}
+          aria-pressed={sort === 'status'}
+          onClick={() => activate('status')}
+        >
+          <span>{t('candidates.fields.status')}</span>
+          {sort === 'status' ? (
+            <DirectionArrow direction={direction} />
+          ) : (
+            <span className="text-slate-300" aria-hidden="true">
+              ↓
+            </span>
+          )}
+        </button>
+      </div>
+    </div>
   )
 }

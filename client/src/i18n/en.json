@@ -16,6 +16,18 @@
     "filterStatus": "Status",
     "allStatuses": "All",
     "clearStatusFilter": "Clear status filter",
+    "filterReviewed": "Review status",
+    "reviewedFilters": {
+      "all": "All",
+      "needs_review": "Needs review",
+      "reviewed": "Reviewed"
+    },
+    "needsReview": "Needs review",
+    "reviewedDone": "Reviewed",
+    "reviewApplication": "Review application",
+    "viewDetails": "View details",
+    "showFilters": "Filters",
+    "hideFilters": "Hide filters",
     "sortBy": "Sort by",
     "direction": "Direction",
     "asc": "Ascending",

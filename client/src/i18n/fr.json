@@ -16,6 +16,18 @@
     "filterStatus": "Statut",
     "allStatuses": "Tous",
     "clearStatusFilter": "Effacer le filtre de statut",
+    "filterReviewed": "Statut d'examen",
+    "reviewedFilters": {
+      "all": "Tous",
+      "needs_review": "À examiner",
+      "reviewed": "Examiné"
+    },
+    "needsReview": "À examiner",
+    "reviewedDone": "Examiné",
+    "reviewApplication": "Examiner la candidature",
+    "viewDetails": "Voir les détails",
+    "showFilters": "Filtres",
+    "hideFilters": "Masquer les filtres",
     "sortBy": "Trier par",
     "direction": "Direction",
     "asc": "Croissant",

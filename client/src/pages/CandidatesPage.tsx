@@ -12,7 +12,6 @@ import { CandidatesToolbar } from '../components/organisms/CandidatesToolbar'
 import { CandidateCard } from '../components/organisms/CandidateCard'
 import { CandidateDetailModal } from '../components/organisms/CandidateDetailModal'
 import { BulkActionBar } from '../components/organisms/BulkActionBar'
-import { Pagination } from '../components/organisms/Pagination'
 import {
   bulkConfirmCopy,
   partitionSelectedForBulk,
@@ -132,7 +131,11 @@ export function CandidatesPage() {
         </header>
 
         <div className="space-y-6">
-          <CandidatesToolbar />
+          <CandidatesToolbar
+            page={listQuery.data?.meta.page ?? 1}
+            totalPages={listQuery.data?.meta.total_pages ?? 0}
+            total={listQuery.data?.meta.total ?? 0}
+          />
 
           {listQuery.isLoading ? (
             <p className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-10 text-center text-slate-600">
@@ -168,14 +171,6 @@ export function CandidatesPage() {
               />
             ))}
           </div>
-
-          {listQuery.data ? (
-            <Pagination
-              page={listQuery.data.meta.page}
-              totalPages={listQuery.data.meta.total_pages}
-              total={listQuery.data.meta.total}
-            />
-          ) : null}
         </div>
       </div>
 
