@@ -109,4 +109,20 @@ class CandidatesControllerTest < ActionDispatch::IntegrationTest
     body = JSON.parse(response.body)
     assert_equal "status_locked", body["errors"].first["code"]
   end
+
+  test "update error message is localized with Accept-Language" do
+    patch candidate_url(@accepted),
+          params: { candidate: { status: "rejected" } },
+          headers: {
+            "Accept" => "application/json",
+            "Accept-Language" => "de",
+            "Content-Type" => "application/json"
+          },
+          as: :json
+
+    assert_response :unprocessable_entity
+    body = JSON.parse(response.body)
+    assert_equal "status_locked", body["errors"].first["code"]
+    assert_match(/nicht mehr geändert/i, body["errors"].first["message"])
+  end
 end
