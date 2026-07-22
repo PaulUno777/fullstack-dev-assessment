@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canChangeStatus } from '../../domain/candidate'
+import { canChangeStatus } from '@/domain/candidate'
 
 describe('StatusActions rule alignment', () => {
   it('mirrors domain lock for final statuses', () => {

@@ -13,6 +13,12 @@ body {
   background: #f3efe6;
 }
 
-.font-display {
-  font-family: var(--font-display);
+button,
+[role='button'] {
+  cursor: pointer;
 }
+
+button:disabled {
+  cursor: not-allowed;
+}
+

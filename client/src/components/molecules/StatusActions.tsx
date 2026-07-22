@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { canChangeStatus } from '../../domain/candidate'
-import type { CandidateStatus } from '../../domain/candidate'
-import { Button } from '../atoms/Button'
+import { Button } from '@/components/atoms/Button'
+import { canChangeStatus } from '@/domain/candidate'
+import type { CandidateStatus } from '@/domain/candidate'
 
 type Props = {
   status: CandidateStatus

@@ -1,4 +1,9 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from 'react'
+import { cn } from '@/lib/cn'
 
 type Variant = 'primary' | 'secondary' | 'danger' | 'ghost'
 
@@ -17,19 +22,23 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
-export function Button({
-  variant = 'secondary',
-  className = '',
-  children,
-  ...props
-}: Props) {
+export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
+  { variant = 'secondary', className, children, disabled, ...props },
+  ref,
+) {
   return (
     <button
+      ref={ref}
       type="button"
-      className={`inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition ${variants[variant]} ${className}`}
+      disabled={disabled}
+      className={cn(
+        'inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed',
+        variants[variant],
+        className,
+      )}
       {...props}
     >
       {children}
     </button>
   )
-}
+})

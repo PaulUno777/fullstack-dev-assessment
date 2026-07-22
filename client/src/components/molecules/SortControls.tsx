@@ -1,40 +1,43 @@
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/cn'
 import {
   useCandidatesUiStore,
   type SortDirection,
-  type SortField,
-} from '../../state/candidatesUiStore'
-import { Select } from '../atoms/Select'
+} from '@/state/candidatesUiStore'
+
+function DirectionArrow({ direction }: { direction: SortDirection }) {
+  return (
+    <span aria-hidden="true" className="font-mono text-sm leading-none">
+      {direction === 'asc' ? '↑' : '↓'}
+    </span>
+  )
+}
+
+const chipBase =
+  'inline-flex h-[38px] cursor-pointer items-center justify-between gap-2 rounded-2xl border border-dashed px-3 text-sm font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-teal-700/30'
+const chipActive =
+  'border-solid border-teal-700/50 bg-teal-50 text-teal-950 ring-2 ring-teal-700/50'
 
 export function SortControls() {
   const { t } = useTranslation()
-  const sort = useCandidatesUiStore((s) => s.sort)
   const direction = useCandidatesUiStore((s) => s.direction)
-  const setSort = useCandidatesUiStore((s) => s.setSort)
   const setDirection = useCandidatesUiStore((s) => s.setDirection)
+  const setSort = useCandidatesUiStore((s) => s.setSort)
+
+  function toggleDirection() {
+    setSort('date_applied')
+    setDirection(direction === 'asc' ? 'desc' : 'asc')
+  }
 
   return (
-    <div className="flex flex-wrap gap-3">
-      <label className="flex flex-col gap-1 text-xs font-medium text-slate-600">
-        {t('candidates.sortBy')}
-        <Select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as SortField)}
-        >
-          <option value="date_applied">{t('candidates.fields.dateApplied')}</option>
-          <option value="status">{t('candidates.fields.status')}</option>
-        </Select>
-      </label>
-      <label className="flex flex-col gap-1 text-xs font-medium text-slate-600">
-        {t('candidates.direction')}
-        <Select
-          value={direction}
-          onChange={(e) => setDirection(e.target.value as SortDirection)}
-        >
-          <option value="desc">{t('candidates.desc')}</option>
-          <option value="asc">{t('candidates.asc')}</option>
-        </Select>
-      </label>
-    </div>
+    <button
+      type="button"
+      className={cn(chipBase, chipActive)}
+      aria-label={`${t('candidates.sortBy')}: ${t('candidates.sortDateApplied')}`}
+      onClick={toggleDirection}
+    >
+      <span>{t('candidates.sortDateApplied')}</span>
+      <DirectionArrow direction={direction} />
+    </button>
   )
 }
