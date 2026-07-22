@@ -17,7 +17,7 @@ systematic testing, CI, and an atomic Git history.
 | Phase | Description | State |
 |-------|-------------|-------|
 | 1 | Docs, stack audit, Cursor rules | **Done** |
-| 2 | Archive legacy code, scaffold Rails / Vite | Pending |
+| 2 | Archive legacy code, scaffold Rails / Vite | **Done** (PR pending) |
 | 3 | API domain logic + tests | Pending |
 | 4 | Client UI + tests | Pending |
 | 5 | CI + final README | Pending |
@@ -28,10 +28,11 @@ systematic testing, CI, and an atomic Git history.
 
 | Layer | Technology | Version target |
 |-------|------------|-----------------|
-| Backend | Ruby + Rails (API-only) | Ruby 3.3+ / Rails 8.1.x |
+| Backend | Ruby + Rails (API-only) under `api/rails` | Ruby 3.4.x / Rails 8.1.3 |
 | Database (dev/test) | SQLite | bundled with Rails |
-| Frontend | Vite + React + TypeScript + Tailwind CSS | Vite 8.x / React 19.2.x |
-| Tests | Minitest (backend) + Vitest (frontend) | stack defaults |
+| Frontend | Vite + React + TypeScript + Tailwind CSS | Vite 8.x / React 19.2.x / Tailwind 4.x |
+| Package manager (FE) | pnpm | 10.x |
+| Tests | Minitest (backend); Vitest later (Phase 4) | stack defaults |
 | CI | GitHub Actions | lint + test on every push/PR (Phase 5) |
 
 The legacy starters (Rails 5.2, CRA, Django) are preserved under `old/` after Phase 2,
@@ -55,14 +56,29 @@ and [`.cursor/rules/assessment-workflow.mdc`](./.cursor/rules/assessment-workflo
 
 ## Quick start
 
-> Commands will be finalized once the Phase 2 scaffolds land.
+Requires Ruby/Rails and Node 22+ with pnpm already installed on your machine
+(no project-level `mise.toml`).
 
 ```bash
-# Backend (planned)
-cd api && bundle install && bin/rails db:setup && bin/rails server
+# Backend
+cd api/rails
+bundle install
+bin/rails db:setup
+bin/rails server
+# → http://localhost:3000
 
-# Frontend (planned)
-cd client && npm install && npm run dev
+# Frontend (separate terminal)
+cd client
+pnpm install
+pnpm dev
+# → http://localhost:5173
+```
+
+Useful checks:
+
+```bash
+cd api/rails && bin/rails test
+cd client && pnpm build
 ```
 
 ---

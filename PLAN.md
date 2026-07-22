@@ -114,13 +114,14 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 - [x] Sensible `.gitignore`
 - [x] Branch model: `master` / `develop` / feature branch per phase
 
-### Phase 2 (next, after confirm)
+### Phase 2 ✅ (`chore/phase-2-scaffold` → PR into `develop`)
 
-- [ ] Move `api/`, `client/` → `old/`
-- [ ] Scaffold Rails 8.1 API-only
-- [ ] Scaffold Vite + React + TS + Tailwind
-- [ ] Port Candidate schema + seeds from `old/api/rails`
-- [ ] Verify: `bin/rails test` / `npm test` smoke (empty OK)
+- [x] Move `api/`, `client/` → `old/`
+- [x] Scaffold Rails 8.1 API-only under `api/rails` (app name `CandidateApi`)
+- [x] Scaffold Vite + React + TS + Tailwind under `client` with **pnpm**
+- [x] Port Candidate schema + seeds from `old/api/rails`
+- [x] Verify: `bin/rails test` green; `pnpm build` green
+- [x] No project `mise.toml` — use machine-installed Ruby/Node/pnpm
 
 ### Phase 3
 
@@ -146,3 +147,4 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 |------|--------|
 | 2026-07-22 | Initial audit, regenerate decision, phased gates, requirement IDs |
 | 2026-07-22 | Git model: `develop` + per-phase feature branches; human-owned PRs |
+| 2026-07-22 | Phase 2: regenerate `api/rails` + `client` (pnpm); toolchain via machine PATH |
