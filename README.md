@@ -1,59 +1,69 @@
-# Full-Stack Developer Assessment
+# Candidates Assessment — Nextise / Hire an Esquire
 
-:wave: Hey there! If you are looking at this, then that means you have been selected to complete an assessment as part of the hiring process for a developer position at [Hire an Esquire](https://hireanesquire.com/).
+API Rails + client React modernisés pour lister, trier et mettre à jour le statut de candidats.
 
-We require all candidates to complete this assessment for a few reasons:
+Ce dépôt démontre un workflow **AI-driven** : plan écrit avant le code, règles Cursor d’architecture, scaffolds propres, tests systématiques, CI, historique Git atomique.
 
-1. We want to have a better understanding about how you approach and solve problems
-1. We can vet candidates more accurately with a common set of criteria to compare
-1. Most importantly, we will analyze your deliverables as part of our in-person interview and use them to discuss your software development ideologies
+> Brief d’origine (exigences produit, **ne pas modifier**) : [`INSTRUCTIONS.md`](./INSTRUCTIONS.md)  
+> Plan vivant (audit, décisions, traçabilité) : [`PLAN.md`](./PLAN.md)
 
-> :question: If you have any questions along the way, you can contact [lenny@hireanesquire.com](mailto:lenny@hireanesquire.com). Please note that all code contained in this repository is provided as-is and we will not be able to provide any technical assistance for it.
+---
 
-You are free to fork this repository to get started.
+## Status
 
-> :clock4: We estimate that this assessment can take anywhere from 1-4 hours to complete, based on individual skill level and implementation details. If you are unable to find enough time or believe this is unreasonable, please let us know and we will do our best to accomodate you.
+| Phase | Description | State |
+|-------|-------------|--------|
+| 1 | Docs, audit, Cursor rules | **Done** |
+| 2 | Archive legacy + scaffold Rails / Vite | Pending |
+| 3 | API domaine + tests | Pending |
+| 4 | Client UI + tests | Pending |
+| 5 | CI + README final | Pending |
 
-## Challenge
+---
 
-We would like you to build an API and client-side web application to display, sort, and modify a list of candidates for a job opening. 
+## Stack cible
 
-You are free to use any tools or projects at your disposal. This project contains a boilerplate frontend app built with [create-react-app](https://github.com/facebook/create-react-app) that you can use to get started with if you choose to do so. You'll find this in the [`client/`](https://github.com/HireAnEsquire/frontend-dev-assessment/tree/master/client) directory.
+| Layer | Technology | Version target |
+|-------|------------|----------------|
+| Backend | Ruby + Rails API | Ruby 3.3+ / Rails 8.1.x |
+| DB (dev/test) | SQLite | via Rails |
+| Frontend | Vite + React + TypeScript + Tailwind | Vite 8.x / React 19.2.x |
+| Tests | Minitest + Vitest | defaults of each stack |
+| CI | GitHub Actions | lint + test (Phase 5) |
 
-This repo also contains a starter rails app and a starter django app that you can use to get started with for the API if you choose to do so. If you choose to use the Django project, we recommend you use [Django Rest Framework](http://http://www.django-rest-framework.org/) to build the API.
+Legacy starters (Rails 5.2 / CRA / Django) will live under `old/` after Phase 2 for provenance only.
 
-## Prerequisites
+---
 
-Each starter project contains a Candidate Model definition with sample data.
+## Architecture (summary)
 
-## Requirements
+- **Backend:** controllers orchestrate HTTP; application services own status transitions (`reviewed`, lock when final); models validate and persist.
+- **Frontend:** `domain` (pure) → `api` → `state` → presentation `components` → `pages`.
+- **Security:** CORS restricted to the Vite origin; no wildcard origins.
+- Full rules: [`.cursor/rules/architecture.mdc`](./.cursor/rules/architecture.mdc), [`.cursor/rules/assessment-workflow.mdc`](./.cursor/rules/assessment-workflow.mdc).
 
-### API
+---
 
-Your API must meet the following requirements:
+## Quick start
 
-1. All data should be transferred via JSON (`Content-Type: application/json`)
-1. Create a REST endpoint that allows Read and Update operations for a single Candidate
-1. Create a REST endpoint to list all candidates
-1. Additionally, provide logic to automatically update the `reviewed` field according to the following rules:
-    - When a candidate moves from Pending to Accepted or Rejected, `reviewed` should be set to `true`
+> Commands will be finalized after Phase 2 scaffolds land.
 
-### Client 
+```bash
+# Backend (planned)
+cd api && bundle install && bin/rails db:setup && bin/rails server
 
-Your client application must meet the following requirements:
+# Frontend (planned)
+cd client && npm install && npm run dev
+```
 
-1. Display a list of candidiates
-    1. All fields except for `id`, `created`, and `updated` should be displayed in some way
-1. Include a UI element to sort the list of candidates by `status` and `date_applied`
-    1. It's up to you if you want to implement this sorting logic in the client or server
-1. Include a button to update the `status` of a candidate
-    1. This action should be sent to the server via an API request
-    1. Pending candidates can be changed to Accepted or Rejected
-    1. Once a candidate has been Accepted or Rejected, `status` cannot be changed
-1. (optional) We recommend using [Redux](https://redux.js.org/) to store your application’s state, but this is not required. If you choose not to, be prepared to explain why.
+---
 
-> :information_source: There are no aesthetic or design requirements. There are also no time limits, but we will not be able to schedule your interview until we receive your submission.
+## Requirements coverage
 
-## Deliverables
+See the traceability table in [`PLAN.md`](./PLAN.md) (IDs A1–A4, C1–C4 from `INSTRUCTIONS.md`).
 
-Please provide a code repository with your source code and any necessary instructions for installing dependencies and running your application.
+---
+
+## License / context
+
+Technical assessment for the AI-Driven Full-Stack Developer role (Nextise / Hire an Esquire). Original challenge by [Hire an Esquire](https://hireanesquire.com/).

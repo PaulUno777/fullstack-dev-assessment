@@ -1,0 +1,41 @@
+.DS_Store
+*.swp
+*~
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Ruby / Rails
+api/.bundle/
+api/vendor/bundle/
+api/log/
+api/tmp/
+api/storage/
+api/node_modules/
+api/public/assets/
+api/coverage/
+api/*.sqlite3
+api/*.sqlite3-*
+api/db/*.sqlite3
+api/db/*.sqlite3-*
+
+# Node / Vite
+client/node_modules/
+client/dist/
+client/coverage/
+client/.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Tooling
+.graphify-out/
+graphify-out/
+.idea/
+.vscode/
+*.local
+
+# OS
+Thumbs.db

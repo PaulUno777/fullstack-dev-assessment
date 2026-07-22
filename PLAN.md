@@ -1,0 +1,129 @@
+# PLAN — Full-Stack Developer Assessment (Nextise / Hire an Esquire)
+
+Living plan. Update at every significant step. Product requirements live in [`INSTRUCTIONS.md`](./INSTRUCTIONS.md) (immutable brief).
+
+**Goal:** Demonstrate an AI-driven professional workflow (plan → rules → scaffold → tests → CI → docs), not only a working app.
+
+---
+
+## Phases (gate: commit + verify + human confirm)
+
+| Phase | Scope | Branch / commit focus | Done when |
+|-------|--------|----------------------|-----------|
+| **1** | Audit, PLAN, rename brief, Cursor rules, README skeleton | `docs:` / `chore:` | Files present; INSTRUCTIONS = original brief |
+| **2** | Archive legacy → `old/`; scaffold Rails API + Vite React TS | `chore:` | Both apps boot; seeds portable |
+| **3** | Domain + API (list/show/update) + tests | `feat(api):` / `test(api):` | API suite green; A1–A4 traced |
+| **4** | Client UI (list/sort/status lock) + tests | `feat(client):` / `test(client):` | Client suite green; C1–C3 traced |
+| **5** | CI (GitHub Actions), badges, README final, CHANGELOG | `ci:` / `docs:` | Push/PR runs lint+test |
+
+After each phase: **commit → verify → wait for confirmation** before the next phase.
+
+---
+
+## Phase 1 — Audit & decisions (current)
+
+### Stack audit (2026-07-22)
+
+| Component | Legacy (repo) | Latest stable (audit) | Decision |
+|-----------|---------------|----------------------|----------|
+| Ruby | 2.4.0 | ≥ 3.2 (Rails 8.1 floor); prefer 3.3/3.4 | **Regenerate** with Ruby 3.3+ via mise |
+| Rails | 5.2 | **8.1.3** | **Regenerate** API-only app |
+| Node | (implicit CRA) | Node 20 LTS (local: v20.11.1) | Keep Node 20 for Vite |
+| React | 16.4 | **19.2.x** | **Regenerate** |
+| Bundler FE | CRA 1.1.4 | **Vite 8.x** | **Regenerate** |
+| CSS | App.css default | **Tailwind CSS** | New with Vite |
+| Django starter | present | — | Archive only; **not used** |
+
+### Why regenerate (not incremental upgrade)
+
+- Rails 5.2 → 8.1 crosses multiple majors; boilerplate has almost no app code worth migrating.
+- CRA is deprecated; React 16 class components are not the target story for an AI-driven fullstack role.
+- Copying domain (model fields + seeds + status rules) into a clean scaffold is lower risk and clearer in Git history.
+
+### Architecture decisions
+
+- **Backend:** Clean Architecture *proportionally* — controllers = HTTP; application services/use cases = transitions; ActiveRecord model = persistence + simple validations. Domain status rules in a pure/service object, heavily tested.
+- **Frontend:** Layers `domain/` (pure) → `api/` → `state/` → `components/` (presentation) → `pages/`.
+- **CORS:** Restricted to Vite origin (`http://localhost:5173`); never `*`.
+- **Tests:** Minitest (Rails default) + Vitest (Vite). Rationale: zero extra framework dep for API; document in README.
+- **State (client):** Prefer lightweight store (Zustand or React Query) over Redux unless complexity warrants it — document final choice in Phase 4.
+- **CD:** Out of scope for this assessment (local demo + Loom). CI only. Documented here intentionally.
+- **i18n:** Not required by INSTRUCTIONS.md. Architecture rule adapted from Jubely: **out of scope** for this assessment to avoid scope creep; note for interview if asked.
+
+### Assumptions / ambiguities (explicit)
+
+| Topic | Decision |
+|-------|----------|
+| `created` / `updated` in brief | Map to Rails `created_at` / `updated_at`; hide from UI list fields |
+| Update endpoint | PATCH status (and allow other fields only if needed later — start with status) |
+| Status lock | Enforced in **application layer + UI** (defense in depth) |
+| Sort location | **Client-side** on `status` and `date_applied` |
+| Legacy code | Moved to `old/` for provenance; not executed |
+
+---
+
+## Requirement traceability (`INSTRUCTIONS.md`)
+
+| ID | Requirement | Implementation (planned) | Test (planned) | Phase |
+|----|-------------|--------------------------|----------------|-------|
+| A1 | JSON `Content-Type` | Rails API defaults | Request assertion | 3 |
+| A2 | Read + Update single Candidate | `GET/PATCH /candidates/:id` | Show/update specs | 3 |
+| A3 | List all candidates | `GET /candidates` | Index spec | 3 |
+| A4 | pending→accepted/rejected ⇒ `reviewed=true` | `Candidates::UpdateStatus` (or equivalent) | Unit + request | 3 |
+| C1 | List fields except id/created/updated | Candidates table/cards | Component or domain render contract | 4 |
+| C2 | Sort by status + date_applied | Client domain helper | Unit tests | 4 |
+| C3 | Status button → API; lock when final | UI + API 422 | Domain + request/UI tests | 4 |
+| C4 | Redux optional | Document alternative | N/A | 4 |
+
+---
+
+## Git / PR strategy
+
+- Conventional Commits: `feat:`, `fix:`, `chore:`, `test:`, `docs:`, `ci:`
+- One concern per commit; never leave suite red on purpose
+- Prefer feature branches per phase (`chore/scaffold`, `feat/api-candidates`, …) or sequential commits on a working branch — keep history readable for interview
+- Final: PR summary + Loom walkthrough (app + architecture + how AI was used)
+
+---
+
+## Phase checklists
+
+### Phase 1 ✅ (this commit)
+
+- [x] Rename brief → `INSTRUCTIONS.md`
+- [x] Create `PLAN.md` with audit + decisions
+- [x] Cursor rules: architecture + assessment workflow (+ keep Karpathy)
+- [x] Professional `README.md` skeleton
+- [x] Sensible `.gitignore`
+
+### Phase 2 (next, after confirm)
+
+- [ ] Move `api/`, `client/` → `old/`
+- [ ] Scaffold Rails 8.1 API-only
+- [ ] Scaffold Vite + React + TS + Tailwind
+- [ ] Port Candidate schema + seeds from `old/api/rails`
+- [ ] Verify: `bin/rails test` / `npm test` smoke (empty OK)
+
+### Phase 3
+
+- [ ] Use case + model validations
+- [ ] REST endpoints + CORS restricted
+- [ ] Tests for A1–A4 green
+
+### Phase 4
+
+- [ ] Layered client + UI
+- [ ] Tests for C1–C3 green
+
+### Phase 5
+
+- [ ] GitHub Actions lint+test
+- [ ] Badges + finalize README + CHANGELOG
+
+---
+
+## Changelog of plan updates
+
+| Date | Change |
+|------|--------|
+| 2026-07-22 | Initial audit, regenerate decision, phased gates, requirement IDs |

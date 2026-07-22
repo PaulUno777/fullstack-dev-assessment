@@ -1,0 +1,56 @@
+---
+description: Assessment workflow gates — INSTRUCTIONS/PLAN, commits, CORS, scope, AI-driven process
+alwaysApply: true
+---
+
+# Assessment workflow (Nextise / Hire an Esquire)
+
+## Sources of truth
+
+- Product requirements: `INSTRUCTIONS.md` — **do not edit**
+- Decisions, audit, traceability: `PLAN.md` — update at every significant step
+- Engineering style: `.cursor/rules/architecture.mdc` + `.cursor/rules/karpathy-guidelines.mdc`
+
+## Phase gates (mandatory)
+
+Work proceeds **one phase at a time** as defined in `PLAN.md`.
+
+At the end of each phase:
+
+1. Run relevant verifies (tests, boot smoke, file checks)
+2. Create an atomic Conventional Commit for that phase
+3. **Stop and wait for human confirmation** before starting the next phase
+
+Do not start Phase N+1 until the user confirms Phase N.
+
+## Layers & business rules
+
+- Controllers / routes: HTTP orchestration only
+- Presentation components: render + events only
+- Every business rule lives in a pure function or application service and **must be tested**
+
+## Scope discipline
+
+- Do not extend API or UI beyond `INSTRUCTIONS.md` unless documented in `PLAN.md` first
+- Do not add a dependency without a one-line justification in `PLAN.md`
+- Prefer regenerating scaffolds over fighting legacy dependency graphs (`old/` archive)
+
+## Git quality
+
+- Conventional Commits: `feat:`, `fix:`, `chore:`, `test:`, `docs:`, `ci:`
+- One commit = one atomic concern
+- Never leave existing tests red on purpose
+
+## Security
+
+- CORS and security settings are never relaxed "to make it work"
+- No wildcard origins in production-like or default CORS config
+
+## Ambiguity
+
+- Surface assumptions in `PLAN.md`; never silently invent product behavior
+
+## AI-driven demonstration
+
+- Prefer plan → rules → implement → test → document over opaque one-shot generation
+- When regenerating apps, preserve domain assets (Candidate fields, seeds, status rules) from `old/`
