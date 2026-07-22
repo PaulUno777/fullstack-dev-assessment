@@ -1,0 +1,170 @@
+---
+description: Clean Architecture, SOLID, KISS, testing and quality — adapted for this assessment
+alwaysApply: true
+---
+
+# Global Engineering Rules
+
+You are a senior software engineer working on this assessment.
+
+All code MUST follow:
+
+- Clean Architecture (proportionally — no ceremony without payoff)
+- SOLID principles
+- KISS principle
+
+Apply these rules proportionally to project complexity.
+Avoid over-engineering small features.
+
+**Scope note:** Product UI strings and API error messages support **EN / DE / FR**
+(see `PLAN.md`). Do not add additional locales without updating `PLAN.md`.
+
+---
+
+## 1. Clean Architecture
+
+Structure SHOULD include clear layers:
+
+### Backend (`api/`)
+
+- Domain / application: status rules, transitions, pure policy (no HTTP)
+- Interfaces: controllers, routes (HTTP only)
+- Infrastructure: ActiveRecord, DB, rack-cors config
+
+### Frontend (`client/`)
+
+- `domain/` — pure functions (sort, canChangeStatus)
+- `api/` — HTTP client
+- `state/` — app state
+- `components/` — presentation
+- `pages/` — composition
+
+### Constraints
+
+- Dependencies point inward only
+- Domain / application logic is free of frameworks where practical (no HTTP, no React in domain helpers)
+- Controllers and presentation components do not own business rules
+
+---
+
+## 2. SOLID Principles
+
+- Single Responsibility: one concern per module
+- Open/Closed: extend via composition, not modification
+- Liskov Substitution: consistent behavior across implementations
+- Interface Segregation: small, focused interfaces
+- Dependency Inversion: depend on abstractions when it reduces coupling
+
+---
+
+## 3. KISS (Strict)
+
+- Prefer simplest working solution
+- Avoid unnecessary abstractions, speculative generalization, deep inheritance
+- Readable > clever
+
+Ask: "Would a senior engineer say this is overcomplicated?" If yes → simplify.
+
+---
+
+## 4. Structural Constraints
+
+- No circular dependencies
+- No controller → raw SQL / ad-hoc business rules bypassing services
+- Use cases / services must not depend on HTTP details
+- Presentation components must not call `fetch` directly when an `api/` module exists
+
+---
+
+## 5. Code Generation Workflow
+
+ALWAYS:
+
+1. Define or reuse domain rules / entities
+2. Define use cases / services
+3. Implement persistence / HTTP adapters
+4. Wire dependencies
+5. Add tests for business behavior before calling the work done
+
+---
+
+## 6. Forbidden Patterns
+
+- God objects
+- Business logic in controllers or presentational components
+- Tight coupling to frameworks in domain helpers
+- Global mutable state without a clear owner
+- Expanding API/UI beyond `INSTRUCTIONS.md` without updating `PLAN.md`
+
+---
+
+## 7. Refactoring Rule
+
+If existing code violates these rules: refactor BEFORE extending.
+Do NOT stack new code on bad design.
+
+---
+
+## 8. Testing Strategy (MANDATORY)
+
+Tests MUST be meaningful, not just present.
+Focus on **confidence per cost**, not coverage %.
+
+### HIGH PRIORITY
+
+- Business logic (domain + use cases) — heavily tested
+- Edge cases and failure paths (invalid status transitions)
+- Critical workflows (pending → accepted/rejected, lock after final)
+
+### Do NOT over-test
+
+- Framework code
+- Trivial getters / wiring
+- Third-party libraries
+
+### Test types
+
+- **Unit (primary):** domain logic, no DB/network when possible
+- **Integration (selective):** use case + persistence / request specs
+- **E2E (minimal):** only if critical journey needs it
+
+### Rules
+
+- Deterministic, readable, fast
+- Descriptive names (`should_set_reviewed_when_pending_becomes_accepted`)
+- AAA pattern (Arrange / Act / Assert)
+
+### Anti-patterns (FORBIDDEN)
+
+- Testing implementation details
+- Fragile tests tied to internal structure
+- Over-mocking everything
+- Snapshot abuse for trivial UI
+
+### Coverage philosophy
+
+- High coverage in domain logic
+- Moderate in application / API
+- Low in pure plumbing
+
+If code is hard to test → the design is wrong → FIX the design first.
+
+---
+
+## 9. Linting & Code Quality
+
+- Use the project linter/formatter when present
+- No dead code, no commented-out blocks
+- Functions short; avoid nesting > 2 levels (prefer early return)
+- One responsibility per function; prefer pure functions
+- No silent failures; use explicit domain/API errors
+- No unused dependencies; justify new deps in `PLAN.md`
+- Same patterns across the codebase
+
+### Self-check before finishing a task
+
+- Layers respected? If not → FIX
+- Business logic outside domain/application? → FIX
+- Over-engineered? → SIMPLIFY
+- Understandable in <30s? → SIMPLIFY
+- Tests cover the behavior change? → ADD if missing

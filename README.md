@@ -1,59 +1,112 @@
-# Full-Stack Developer Assessment
+# Paulin Nzodoum Assessment — Nextise / Hire an Esquire
 
-:wave: Hey there! If you are looking at this, then that means you have been selected to complete an assessment as part of the hiring process for a developer position at [Hire an Esquire](https://hireanesquire.com/).
+[![CI](https://github.com/PaulUno777/fullstack-dev-assessment/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/PaulUno777/fullstack-dev-assessment/actions/workflows/ci.yml)
 
-We require all candidates to complete this assessment for a few reasons:
+A modernized Rails API and React client for listing, sorting, and updating candidate
+application statuses.
 
-1. We want to have a better understanding about how you approach and solve problems
-1. We can vet candidates more accurately with a common set of criteria to compare
-1. Most importantly, we will analyze your deliverables as part of our in-person interview and use them to discuss your software development ideologies
+This repository demonstrates an **AI-driven** development workflow: a written plan
+before any code, Cursor rules that encode the target architecture, clean scaffolding,
+systematic testing, CI, and an atomic Git history.
 
-> :question: If you have any questions along the way, you can contact [lenny@hireanesquire.com](mailto:lenny@hireanesquire.com). Please note that all code contained in this repository is provided as-is and we will not be able to provide any technical assistance for it.
+> Original brief (product requirements — **do not modify**): [`INSTRUCTIONS.md`](./INSTRUCTIONS.md)  
+> Living plan (audit, decisions, requirements traceability): [`PLAN.md`](./PLAN.md)
 
-You are free to fork this repository to get started.
+---
 
-> :clock4: We estimate that this assessment can take anywhere from 1-4 hours to complete, based on individual skill level and implementation details. If you are unable to find enough time or believe this is unreasonable, please let us know and we will do our best to accomodate you.
+## Status
 
-## Challenge
+| Phase | Description | State |
+|-------|-------------|-------|
+| 1 | Docs, stack audit, Cursor rules | **Done** |
+| 2 | Archive legacy code, scaffold Rails / Vite | **Done** |
+| 3 | API domain + pagination/search + i18n + CI | **Done** (PR pending) |
+| 4 | Client UI + tests | Pending |
+| 5 | Polish README / Loom | Pending (CI already in Phase 3) |
 
-We would like you to build an API and client-side web application to display, sort, and modify a list of candidates for a job opening. 
+**CD:** intentionally omitted — local demo + Loom video; no production host for this assessment.
 
-You are free to use any tools or projects at your disposal. This project contains a boilerplate frontend app built with [create-react-app](https://github.com/facebook/create-react-app) that you can use to get started with if you choose to do so. You'll find this in the [`client/`](https://github.com/HireAnEsquire/frontend-dev-assessment/tree/master/client) directory.
+---
 
-This repo also contains a starter rails app and a starter django app that you can use to get started with for the API if you choose to do so. If you choose to use the Django project, we recommend you use [Django Rest Framework](http://http://www.django-rest-framework.org/) to build the API.
+## Target stack
 
-## Prerequisites
+| Layer | Technology | Version target |
+|-------|------------|-----------------|
+| Backend | Ruby + Rails (API-only) under `api/rails` | Ruby 3.4.x / Rails 8.1.3 |
+| Database (dev/test) | SQLite | bundled with Rails |
+| Frontend | Vite + React + TypeScript + Tailwind CSS | Vite 8.x / React 19.2.x / Tailwind 4.x |
+| Package manager (FE) | pnpm | 10.x |
+| i18n | Rails I18n + i18next | EN / DE / FR |
+| Tests | Minitest (backend); Vitest later (Phase 4) | stack defaults |
+| CI | GitHub Actions | lint + test on push/PR |
 
-Each starter project contains a Candidate Model definition with sample data.
+Legacy starters live under `old/` for provenance only.
 
-## Requirements
+---
 
-### API
+## Architecture (summary)
 
-Your API must meet the following requirements:
+- **Backend:** controllers orchestrate HTTP; `Candidates::StatusPolicy` / `UpdateStatus` / `ListQuery` own business rules; models validate and persist.
+- **Frontend:** `domain` → `api` → `state` → `components` → `pages` (full UI in Phase 4). i18n foundation already present.
+- **Security:** CORS restricted to `http://localhost:5173` — no wildcard origins.
 
-1. All data should be transferred via JSON (`Content-Type: application/json`)
-1. Create a REST endpoint that allows Read and Update operations for a single Candidate
-1. Create a REST endpoint to list all candidates
-1. Additionally, provide logic to automatically update the `reviewed` field according to the following rules:
-    - When a candidate moves from Pending to Accepted or Rejected, `reviewed` should be set to `true`
+---
 
-### Client 
+## API (Phase 3)
 
-Your client application must meet the following requirements:
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/candidates` | Paginated list + filters |
+| `GET` | `/candidates/:id` | Show one |
+| `PATCH` | `/candidates/:id` | Update `status` only |
 
-1. Display a list of candidiates
-    1. All fields except for `id`, `created`, and `updated` should be displayed in some way
-1. Include a UI element to sort the list of candidates by `status` and `date_applied`
-    1. It's up to you if you want to implement this sorting logic in the client or server
-1. Include a button to update the `status` of a candidate
-    1. This action should be sent to the server via an API request
-    1. Pending candidates can be changed to Accepted or Rejected
-    1. Once a candidate has been Accepted or Rejected, `status` cannot be changed
-1. (optional) We recommend using [Redux](https://redux.js.org/) to store your application’s state, but this is not required. If you choose not to, be prepared to explain why.
+Query params for list: `page`, `per_page`, `status`, `q` (name search), `sort` (`status` \| `date_applied`), `direction` (`asc` \| `desc`).
 
-> :information_source: There are no aesthetic or design requirements. There are also no time limits, but we will not be able to schedule your interview until we receive your submission.
+Response shape:
 
-## Deliverables
+```json
+{ "data": [ /* candidates */ ], "meta": { "page": 1, "per_page": 20, "total": 6, "total_pages": 1 } }
+```
 
-Please provide a code repository with your source code and any necessary instructions for installing dependencies and running your application.
+Errors: `{ "errors": [{ "code": "status_locked", "message": "..." }] }` — `message` localized via `Accept-Language` (`en`, `de`, `fr`).
+
+---
+
+## Quick start
+
+Requires Ruby/Rails and Node 22+ with pnpm on your machine (no project-level `mise.toml`).
+
+```bash
+# Backend
+cd api/rails
+bundle install
+bin/rails db:setup
+bin/rails server
+# → http://localhost:3000
+
+# Frontend (separate terminal)
+cd client
+pnpm install
+pnpm dev
+# → http://localhost:5173
+```
+
+Checks:
+
+```bash
+cd api/rails && bin/rails test
+cd client && pnpm build
+```
+
+---
+
+## Requirements coverage
+
+See [`PLAN.md`](./PLAN.md) for IDs A1–A4 / C1–C4 and documented scope extensions (pagination, search, i18n).
+
+---
+
+## License / context
+
+Technical assessment for the AI-Driven Full-Stack Developer role at Nextise, built on
+the original challenge provided by [Hire an Esquire](https://hireanesquire.com/).

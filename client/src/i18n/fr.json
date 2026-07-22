@@ -1,0 +1,13 @@
+{
+  "app": {
+    "brand": "Candidats",
+    "title": "Client d'assessment",
+    "subtitle": "Vite + React + TypeScript + Tailwind est prêt. Liste, tri et actions de statut arrivent en phase 4."
+  },
+  "language": {
+    "label": "Langue",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français"
+  }
+}

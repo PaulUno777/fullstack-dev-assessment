@@ -1,0 +1,49 @@
+.DS_Store
+*.swp
+*~
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+**/config/master.key
+mise.toml
+
+# Ruby / Rails (api/rails)
+api/rails/.bundle/
+api/rails/vendor/bundle/
+api/rails/log/*
+!api/rails/log/.keep
+api/rails/tmp/*
+!api/rails/tmp/.keep
+!api/rails/tmp/pids/
+!api/rails/tmp/pids/.keep
+!api/rails/tmp/storage/
+!api/rails/tmp/storage/.keep
+api/rails/storage/*
+!api/rails/storage/.keep
+api/rails/*.sqlite3
+api/rails/*.sqlite3-*
+api/rails/storage/*.sqlite3
+api/rails/storage/*.sqlite3-*
+api/rails/coverage/
+
+# Node / Vite (client)
+client/node_modules/
+client/dist/
+client/coverage/
+client/.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Tooling
+.graphify-out/
+graphify-out/
+.idea/
+.vscode/
+*.local
+.cursor/plans/
+
+# OS
+Thumbs.db
