@@ -1,37 +1,23 @@
 import { useTranslation } from 'react-i18next'
-import type { CandidateStatus } from '../../domain/candidate'
 import { useCandidatesUiStore } from '../../state/candidatesUiStore'
-import { Select } from '../atoms/Select'
 import { Button } from '../atoms/Button'
 import { SearchField } from '../molecules/SearchField'
 import { SortControls } from '../molecules/SortControls'
+import { MultiSelectDropdown } from '../molecules/MultiSelectDropdown'
 
 export function CandidatesToolbar() {
   const { t } = useTranslation()
-  const status = useCandidatesUiStore((s) => s.status)
-  const setStatus = useCandidatesUiStore((s) => s.setStatus)
+  const statuses = useCandidatesUiStore((s) => s.statuses)
+  const setStatuses = useCandidatesUiStore((s) => s.setStatuses)
   const resetFilters = useCandidatesUiStore((s) => s.resetFilters)
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="sticky top-0 z-20 -mx-4 border-b border-slate-200/80 bg-[#f3efe6]/90 px-4 py-3 shadow-sm backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="flex flex-wrap items-end gap-2 sm:gap-3">
         <SearchField />
-        <label className="flex flex-col gap-1 text-xs font-medium text-slate-600">
-          {t('candidates.filterStatus')}
-          <Select
-            value={status}
-            onChange={(e) =>
-              setStatus(e.target.value as CandidateStatus | '')
-            }
-          >
-            <option value="">{t('candidates.allStatuses')}</option>
-            <option value="pending">{t('candidates.statuses.pending')}</option>
-            <option value="accepted">{t('candidates.statuses.accepted')}</option>
-            <option value="rejected">{t('candidates.statuses.rejected')}</option>
-          </Select>
-        </label>
+        <MultiSelectDropdown value={statuses} onChange={setStatuses} />
         <SortControls />
-        <Button variant="ghost" onClick={resetFilters}>
+        <Button variant="ghost" className="shrink-0" onClick={resetFilters}>
           {t('candidates.reset')}
         </Button>
       </div>

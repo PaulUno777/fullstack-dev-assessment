@@ -15,6 +15,7 @@
     "searchPlaceholder": "Search by name",
     "filterStatus": "Status",
     "allStatuses": "All",
+    "clearStatusFilter": "Clear status filter",
     "sortBy": "Sort by",
     "direction": "Direction",
     "asc": "Ascending",

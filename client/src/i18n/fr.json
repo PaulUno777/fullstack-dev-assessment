@@ -15,6 +15,7 @@
     "searchPlaceholder": "Rechercher par nom",
     "filterStatus": "Statut",
     "allStatuses": "Tous",
+    "clearStatusFilter": "Effacer le filtre de statut",
     "sortBy": "Trier par",
     "direction": "Direction",
     "asc": "Croissant",

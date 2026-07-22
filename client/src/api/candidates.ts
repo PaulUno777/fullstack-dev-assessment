@@ -10,7 +10,7 @@ export type ListMeta = {
 export type ListCandidatesParams = {
   page?: number
   per_page?: number
-  status?: CandidateStatus | ''
+  status?: CandidateStatus | CandidateStatus[] | ''
   q?: string
   sort?: 'status' | 'date_applied'
   direction?: 'asc' | 'desc'
@@ -62,7 +62,11 @@ export async function listCandidates(
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))
   if (params.per_page) query.set('per_page', String(params.per_page))
-  if (params.status) query.set('status', params.status)
+  if (Array.isArray(params.status) && params.status.length > 0) {
+    query.set('status', params.status.join(','))
+  } else if (typeof params.status === 'string' && params.status) {
+    query.set('status', params.status)
+  }
   if (params.q) query.set('q', params.q)
   if (params.sort) query.set('sort', params.sort)
   if (params.direction) query.set('direction', params.direction)
@@ -92,4 +96,27 @@ export async function updateCandidateStatus(
     body: JSON.stringify({ candidate: { status } }),
   })
   return parseJson<Candidate>(response)
+}
+
+export type BulkUpdateResponse = {
+  data: Candidate[]
+  meta: { updated: number; failed: number }
+  errors: Array<{ id: number; code: string; message: string }>
+}
+
+export async function bulkUpdateCandidateStatus(
+  ids: number[],
+  status: Exclude<CandidateStatus, 'pending'>,
+  locale: string,
+): Promise<BulkUpdateResponse> {
+  const response = await fetch(`${apiBase()}/candidates/bulk`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Accept-Language': locale,
+    },
+    body: JSON.stringify({ ids, status }),
+  })
+  return parseJson<BulkUpdateResponse>(response)
 }

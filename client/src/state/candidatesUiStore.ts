@@ -7,12 +7,12 @@ export type SortDirection = 'asc' | 'desc'
 type CandidatesUiState = {
   page: number
   perPage: number
-  status: CandidateStatus | ''
+  statuses: CandidateStatus[]
   q: string
   sort: SortField
   direction: SortDirection
   setPage: (page: number) => void
-  setStatus: (status: CandidateStatus | '') => void
+  setStatuses: (statuses: CandidateStatus[]) => void
   setQ: (q: string) => void
   setSort: (sort: SortField) => void
   setDirection: (direction: SortDirection) => void
@@ -22,7 +22,7 @@ type CandidatesUiState = {
 const initialFilters = {
   page: 1,
   perPage: 10,
-  status: '' as CandidateStatus | '',
+  statuses: [] as CandidateStatus[],
   q: '',
   sort: 'date_applied' as SortField,
   direction: 'desc' as SortDirection,
@@ -31,7 +31,7 @@ const initialFilters = {
 export const useCandidatesUiStore = create<CandidatesUiState>((set) => ({
   ...initialFilters,
   setPage: (page) => set({ page }),
-  setStatus: (status) => set({ status, page: 1 }),
+  setStatuses: (statuses) => set({ statuses, page: 1 }),
   setQ: (q) => set({ q, page: 1 }),
   setSort: (sort) => set({ sort, page: 1 }),
   setDirection: (direction) => set({ direction, page: 1 }),
