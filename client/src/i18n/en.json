@@ -1,0 +1,13 @@
+{
+  "app": {
+    "brand": "Candidates",
+    "title": "Assessment client",
+    "subtitle": "Vite + React + TypeScript + Tailwind is ready. Candidate list, sort, and status actions land in phase 4."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français"
+  }
+}

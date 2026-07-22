@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, master, "feat/**", "chore/**", "ci/**", "docs/**"]
+  pull_request:
+    branches: [develop, master]
+
+jobs:
+  api:
+    name: API (Rails)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api/rails
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: api/rails
+      - name: Prepare database
+        run: bin/rails db:test:prepare
+      - name: Test
+        run: bin/rails test
+
+  client:
+    name: Client (Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: client/pnpm-lock.yaml
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Build
+        run: pnpm build

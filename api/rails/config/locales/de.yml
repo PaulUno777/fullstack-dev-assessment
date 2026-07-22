@@ -1,0 +1,7 @@
+de:
+  candidates:
+    errors:
+      not_found: "Kandidat nicht gefunden"
+      status_locked: "Der Status kann nach Annahme oder Ablehnung nicht mehr geändert werden"
+      invalid_transition: "Nur ausstehende Kandidaten können angenommen oder abgelehnt werden"
+      invalid_status: "Status muss pending, accepted oder rejected sein"

@@ -16,7 +16,8 @@ All code MUST follow:
 Apply these rules proportionally to project complexity.
 Avoid over-engineering small features.
 
-**Scope note:** Full Jubely-style i18n is **out of scope** for this assessment (`INSTRUCTIONS.md` does not require it). Do not add i18n unless `PLAN.md` is updated first.
+**Scope note:** Product UI strings and API error messages support **EN / DE / FR**
+(see `PLAN.md`). Do not add additional locales without updating `PLAN.md`.
 
 ---
 
