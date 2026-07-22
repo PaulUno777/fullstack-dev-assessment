@@ -1,0 +1,66 @@
+---
+description: Project workflow gates — INSTRUCTIONS/PLAN, commits, CORS, scope, AI-driven process
+alwaysApply: true
+---
+
+# Assessment workflow (Nextise / Hire an Esquire)
+
+## Sources of truth
+
+- Product requirements: `INSTRUCTIONS.md` — **do not edit**
+- Decisions, audit, traceability: `PLAN.md` — update at every significant step
+- Engineering style: `.cursor/rules/architecture.mdc` + `.cursor/rules/karpathy-guidelines.mdc`
+
+## Git branching (mandatory)
+
+- `master` — upstream/releases only (no direct agent commits)
+- `develop` — integration base for all new work
+- One feature branch per phase (see `PLAN.md` names)
+- PRs are **human-owned**: agent must NOT run `gh pr create`
+- After a phase PR is merged: update local `develop`, then branch the next phase from `develop`
+
+## Phase gates (mandatory)
+
+Work proceeds **one phase at a time** as defined in `PLAN.md`.
+
+At the end of each phase:
+
+1. Run relevant verifies (tests, boot smoke, file checks)
+2. Create atomic Conventional Commit(s) on the phase feature branch
+3. Push the feature branch if remote setup is requested
+4. **Stop and wait for human confirmation** (human opens/merges PR into `develop`) before starting the next phase
+
+Do not start Phase N+1 until the user confirms Phase N is merged (or explicitly waives the PR gate).
+
+## Layers & business rules
+
+- Controllers / routes: HTTP orchestration only
+- Presentation components: render + events only
+- Every business rule lives in a pure function or application service and **must be tested**
+
+## Scope discipline
+
+- Do not extend API or UI beyond `INSTRUCTIONS.md` unless documented in `PLAN.md` first
+- Do not add a dependency without a one-line justification in `PLAN.md`
+- Prefer regenerating scaffolds over fighting legacy dependency graphs (`old/` archive)
+
+## Git quality
+
+- Conventional Commits: `feat:`, `fix:`, `chore:`, `test:`, `docs:`, `ci:`
+- One commit = one atomic concern
+- Never leave existing tests red on purpose
+- Never commit directly on `master` or `develop` for phase work — use the feature branch
+
+## Security
+
+- CORS and security settings are never relaxed "to make it work"
+- No wildcard origins in production-like or default CORS config
+
+## Ambiguity
+
+- Surface assumptions in `PLAN.md`; never silently invent product behavior
+
+## AI-driven demonstration
+
+- Prefer plan → rules → implement → test → document over opaque one-shot generation
+- When regenerating apps, preserve domain assets (Candidate fields, seeds, status rules) from `old/`
