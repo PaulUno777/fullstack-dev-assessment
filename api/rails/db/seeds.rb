@@ -1,3 +1,5 @@
+Candidate.delete_all
+
 Candidate.create(
     name: 'Alan Cruz',
     years_exp: 10,

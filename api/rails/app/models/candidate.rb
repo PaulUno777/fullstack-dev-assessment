@@ -1,3 +1,5 @@
 class Candidate < ApplicationRecord
-  validates :status, inclusion: { in: %w(pending accepted rejected) }
+  STATUSES = %w[pending accepted rejected].freeze
+
+  validates :status, inclusion: { in: STATUSES }
 end
