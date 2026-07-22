@@ -8,15 +8,15 @@ Living plan. Update at every significant step. Product requirements live in [`IN
 
 ## Phases (gate: commit + verify + human confirm)
 
-| Phase | Scope | Branch / commit focus | Done when |
-|-------|--------|----------------------|-----------|
-| **1** | Audit, PLAN, rename brief, Cursor rules, README skeleton | `docs:` / `chore:` | Files present; INSTRUCTIONS = original brief |
-| **2** | Archive legacy → `old/`; scaffold Rails API + Vite React TS | `chore:` | Both apps boot; seeds portable |
-| **3** | Domain + API (list/show/update) + tests | `feat(api):` / `test(api):` | API suite green; A1–A4 traced |
-| **4** | Client UI (list/sort/status lock) + tests | `feat(client):` / `test(client):` | Client suite green; C1–C3 traced |
-| **5** | CI (GitHub Actions), badges, README final, CHANGELOG | `ci:` / `docs:` | Push/PR runs lint+test |
+| Phase | Scope | Branch | Commit focus | Done when |
+|-------|--------|--------|--------------|-----------|
+| **1** | Audit, PLAN, rename brief, Cursor rules, README skeleton | `docs/phase-1-foundation` | `docs:` / `chore:` | Files present; INSTRUCTIONS = original brief; PR → `develop` |
+| **2** | Archive legacy → `old/`; scaffold Rails API + Vite React TS | `chore/phase-2-scaffold` | `chore:` | Both apps boot; seeds portable |
+| **3** | Domain + API (list/show/update) + tests | `feat/phase-3-api-candidates` | `feat(api):` / `test(api):` | API suite green; A1–A4 traced |
+| **4** | Client UI (list/sort/status lock) + tests | `feat/phase-4-client-ui` | `feat(client):` / `test(client):` | Client suite green; C1–C3 traced |
+| **5** | CI (GitHub Actions), badges, README final, CHANGELOG | `ci/phase-5-github-actions` | `ci:` / `docs:` | Push/PR runs lint+test |
 
-After each phase: **commit → verify → wait for confirmation** before the next phase.
+After each phase: **commit → verify → human PR into `develop` → confirm** before the next phase.
 
 ---
 
@@ -79,22 +79,40 @@ After each phase: **commit → verify → wait for confirmation** before the nex
 
 ## Git / PR strategy
 
+### Branch model
+
+| Branch | Role |
+|--------|------|
+| `master` | Sync with upstream / releases. No direct commits (PR merges only). |
+| `develop` | Integration branch (default base for work). |
+| `docs/phase-1-foundation` | Phase 1 feature branch → PR into `develop` |
+| `chore/phase-2-scaffold` | Phase 2 |
+| `feat/phase-3-api-candidates` | Phase 3 |
+| `feat/phase-4-client-ui` | Phase 4 |
+| `ci/phase-5-github-actions` | Phase 5 |
+
+Flow: `feature → develop` (human opens PR) → later `develop → master` if needed.
+
+### Commit & gate rules
+
 - Conventional Commits: `feat:`, `fix:`, `chore:`, `test:`, `docs:`, `ci:`
 - One concern per commit; never leave suite red on purpose
-- Prefer feature branches per phase (`chore/scaffold`, `feat/api-candidates`, …) or sequential commits on a working branch — keep history readable for interview
+- Agent: create branch, commit, verify, **stop** — human creates/merges PRs (`gh pr create`)
+- After each phase PR is merged: pull `develop`, then start next feature branch from `develop`
 - Final: PR summary + Loom walkthrough (app + architecture + how AI was used)
 
 ---
 
 ## Phase checklists
 
-### Phase 1 ✅ (this commit)
+### Phase 1 ✅ (`docs/phase-1-foundation` → PR into `develop`)
 
 - [x] Rename brief → `INSTRUCTIONS.md`
 - [x] Create `PLAN.md` with audit + decisions
 - [x] Cursor rules: architecture + assessment workflow (+ keep Karpathy)
 - [x] Professional `README.md` skeleton
 - [x] Sensible `.gitignore`
+- [x] Branch model: `master` / `develop` / feature branch per phase
 
 ### Phase 2 (next, after confirm)
 
@@ -127,3 +145,4 @@ After each phase: **commit → verify → wait for confirmation** before the nex
 | Date | Change |
 |------|--------|
 | 2026-07-22 | Initial audit, regenerate decision, phased gates, requirement IDs |
+| 2026-07-22 | Git model: `develop` + per-phase feature branches; human-owned PRs |
