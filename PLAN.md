@@ -46,7 +46,7 @@ After each phase: **commit → verify → human PR into `develop` → confirm** 
 - **Frontend:** Layers `domain/` (pure) → `api/` → `state/` → `components/` (presentation) → `pages/`.
 - **CORS:** Restricted to Vite origin (`http://localhost:5173`); never `*`.
 - **Tests:** Minitest (Rails default) + Vitest (Vite). Rationale: zero extra framework dep for API; document in README.
-- **State (client):** Prefer lightweight store (Zustand or React Query) over Redux unless complexity warrants it — document final choice in Phase 4.
+- **State (client):** **TanStack Query** (server cache) + **Zustand** (UI filters). Redux declined as overkill for one screen / no event sourcing — see README.
 - **CD:** Intentionally omitted (local demo + Loom; no production host). CI only.
 - **i18n:** Voluntary scope extension — **EN / DE / FR** on API errors (`Accept-Language`) and client foundation (`i18next`). Justified for interview demo of i18n without bloating the brief.
 - **Pagination / filter / search:** Voluntary scope extension on `GET /candidates` (`page`, `per_page`, `status`, `q`, `sort`, `direction`) for large-list readiness.
@@ -62,7 +62,7 @@ After each phase: **commit → verify → human PR into `develop` → confirm** 
 | Sort location | Server supports `sort`/`direction`; Phase 4 may also sort client-side |
 | Pagination | `page` / `per_page` with `meta` (default 20, max 100) |
 | Search | `q` matches candidate `name` (case-insensitive) |
-| Legacy code | Moved to `old/` for provenance; not executed |
+| Legacy code | Archived then **removed** in Phase 4 (history retains `chore: archive…`); active code only under `api/rails` + `client` |
 
 ---
 
@@ -74,10 +74,10 @@ After each phase: **commit → verify → human PR into `develop` → confirm** 
 | A2 | Read + Update single Candidate | `GET/PATCH /candidates/:id` | Show/update specs | 3 ✅ |
 | A3 | List all candidates | `GET /candidates` (+ pagination meta) | Index spec | 3 ✅ |
 | A4 | pending→accepted/rejected ⇒ `reviewed=true` | `Candidates::UpdateStatus` | Unit + request | 3 ✅ |
-| C1 | List fields except id/created/updated | Candidates table/cards | Component or domain render contract | 4 |
-| C2 | Sort by status + date_applied | Client domain helper | Unit tests | 4 |
-| C3 | Status button → API; lock when final | UI + API 422 | Domain + request/UI tests | 4 |
-| C4 | Redux optional | Document alternative | N/A | 4 |
+| C1 | List fields except id/created/updated | CandidateCard via `toListFields` | Vitest `toListFields` | 4 ✅ |
+| C2 | Sort by status + date_applied | Toolbar → API `sort`/`direction` | Manual + API specs | 4 ✅ |
+| C3 | Status button → API; lock when final | StatusActions + PATCH + API 422 | Vitest `canChangeStatus` | 4 ✅ |
+| C4 | Redux optional | TanStack Query + Zustand (documented; Loom rationale) | N/A | 4 ✅ |
 
 ---
 
@@ -137,14 +137,39 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 - [x] GitHub Actions CI + README badge
 - [x] CD omitted (documented)
 
-### Phase 4
+### Phase 4 ✅ (`feat/phase-4-client-ui` → PR into `develop`)
 
-- [ ] Layered client + UI
-- [ ] Tests for C1–C3 green
+- [x] Remove `old/` (history retains archive)
+- [x] Layered client UI (atoms → molecules → organisms → page)
+- [x] TanStack Query + Zustand (no Redux; Loom rationale in README)
+- [x] Tests for C1–C3 helpers green (Vitest)
+- [x] Recruiter-oriented README
 
 ### Phase 5
 
-- [ ] README / Loom polish (CI already in Phase 3)
+- [ ] Loom walkthrough (CI already in Phase 3)
+
+---
+
+## UI/UX enhancements (beyond `INSTRUCTIONS.md`)
+
+Voluntary polish on `feat/ui-ux-enhancements`. Core C1–C3 stay intact (card list, not table; sort UI; status via API; lock when final). These are deliberate extras for the assessment narrative.
+
+| Enhancement | Why | Notes |
+|-------------|-----|-------|
+| Multi-status filter | Recruiters often need “pending + rejected” without losing server pagination | API: `status=pending,rejected` (CSV) and/or `status[]=…`; client multi-select dropdown |
+| Dedicated bulk endpoint | One round-trip, consistent errors, same status rules | `PATCH /candidates/bulk` with `{ ids, status }` → `{ data, meta, errors }`; service `Candidates::BulkUpdateStatus` reuses `UpdateStatus` |
+| Card selection + floating bulk bar | Speed up review of many pending cards | Confirm dialog before Accept/Reject; only pending IDs update; locked selection explained |
+| Candidate detail modal | Keep cards compact; full description + Accept/Reject in modal | List fields still match C1; no Accept/Reject on the card itself |
+| Persist filters / sort / language | Restore review context after reload | `localStorage` for `statuses` / `sort` / `direction` / locale. Not persisted: selection, `q`, `page` |
+| Browser language detection | First visit matches `navigator.language` (`en`/`de`/`fr`, else `en`) | Explicit LanguageSwitcher choice overrides and persists |
+| Sticky toolbar + date sort arrow | Keep controls reachable | Direction toggle on date-applied chip; status sort UI removed (status covered by multi-status filter; API still accepts `sort=status`) |
+| 2-column card grid | Denser review on large screens | `grid-cols-1 lg:grid-cols-2`; selected cards use teal ring + soft glow |
+| Click-to-select cards | Faster multi-select | Whole card toggles selection; Review CTA opens detail modal (`stopPropagation`) |
+| Smart reviewed CTA + badge | Drive unreviewed queue into modal | “Review application” when `!reviewed`; teal Reviewed badge when done; Accept/Reject still sets `reviewed` via A2 |
+| Toolbar pagination + mobile filters | Sticky controls without Reset | `Page X of Y · N` + icon Prev/Next; sm Filters toggle; Reset removed |
+
+Brief compliance: Accept/Reject (single + bulk) still go through `Candidates::UpdateStatus` / `StatusPolicy` (A2/A4); status lock unchanged (C3). Cards remain the list UI — no table. Date sort remains in UI; status sort available via API if needed (UX simplification vs C2 dual-sort UI — status filter substitutes for browsing by status).
 
 ---
 
@@ -156,3 +181,7 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 | 2026-07-22 | Git model: `develop` + per-phase feature branches; human-owned PRs |
 | 2026-07-22 | Phase 2: regenerate `api/rails` + `client` (pnpm); toolchain via machine PATH |
 | 2026-07-22 | Phase 3: API A1–A4, pagination/search, EN/DE/FR i18n, CI badges; CD omitted |
+| 2026-07-22 | Phase 4: remove `old/`; TanStack Query + Zustand client UI |
+| 2026-07-22 | UI/UX enhancements: multi-status, bulk API, selection/modal, persist, auto-i18n |
+| 2026-07-22 | Toolbar polish: reviewed filter, click-select, Review CTA, chip sort/filters |
+| 2026-07-22 | Toolbar density: drop reviewed filter + status-sort chip; date-only sort; denser pagination |

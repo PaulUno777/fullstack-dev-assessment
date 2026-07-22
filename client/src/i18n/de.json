@@ -1,13 +1,69 @@
 {
   "app": {
-    "brand": "Kandidaten",
-    "title": "Assessment-Client",
-    "subtitle": "Vite + React + TypeScript + Tailwind ist bereit. Kandidatenliste, Sortierung und Statusaktionen folgen in Phase 4."
+    "brand": "Bewertungsflow",
+    "title": "Kandidaten",
+    "subtitle": "Bewerbungen prüfen, nach Status oder Datum sortieren und ausstehende Kandidaten annehmen oder ablehnen."
   },
   "language": {
     "label": "Sprache",
     "en": "English",
     "de": "Deutsch",
     "fr": "Français"
+  },
+  "candidates": {
+    "search": "Suche",
+    "searchPlaceholder": "Nach Name suchen",
+    "filterStatus": "Status",
+    "allStatuses": "Alle",
+    "clearStatusFilter": "Statusfilter löschen",
+    "needsReview": "Zu prüfen",
+    "reviewedDone": "Geprüft",
+    "reviewApplication": "Bewerbung prüfen",
+    "viewDetails": "Details anzeigen",
+    "showFilters": "Filter",
+    "hideFilters": "Filter ausblenden",
+    "sortBy": "Sortieren nach",
+    "sortDateApplied": "Bewerbungsdatum",
+    "direction": "Richtung",
+    "asc": "Aufsteigend",
+    "desc": "Absteigend",
+    "reset": "Zurücksetzen",
+    "accept": "Annehmen",
+    "reject": "Ablehnen",
+    "close": "Schließen",
+    "clearSelection": "Auswahl löschen",
+    "selectCandidate": "{{name}} auswählen",
+    "selectedCount": "{{count}} ausgewählt",
+    "bulkActionableHint": "{{count}} ausstehend können aktualisiert werden",
+    "confirmTitle": "Statusänderung bestätigen",
+    "confirmAcceptMany": "{{count}} ausstehende Kandidaten annehmen? Das kann nicht rückgängig gemacht werden.",
+    "confirmRejectMany": "{{count}} ausstehende Kandidaten ablehnen? Das kann nicht rückgängig gemacht werden.",
+    "confirmSkippedLocked": "{{count}} gesperrte Auswahl(en) werden übersprungen.",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "statusLocked": "Der Status ist final und kann nicht geändert werden.",
+    "loading": "Kandidaten werden geladen…",
+    "loadError": "Kandidaten konnten nicht geladen werden.",
+    "empty": "Keine Kandidaten für diese Filter.",
+    "unknownError": "Etwas ist schiefgelaufen.",
+    "noDescription": "Keine Beschreibung vorhanden.",
+    "yes": "Ja",
+    "no": "Nein",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "pageOf": "Seite {{page}} von {{totalPages}}",
+    "pageMeta": "Seite {{page}} von {{totalPages}} · {{total}}",
+    "totalCount": "{{count}} Kandidaten",
+    "yearsExp": "{{count}} Jahre Erfahrung",
+    "fields": {
+      "status": "Status",
+      "dateApplied": "Bewerbungsdatum",
+      "reviewed": "Geprüft"
+    },
+    "statuses": {
+      "pending": "Ausstehend",
+      "accepted": "Angenommen",
+      "rejected": "Abgelehnt"
+    }
   }
 }

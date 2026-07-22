@@ -1,13 +1,69 @@
 {
   "app": {
-    "brand": "Candidats",
-    "title": "Client d'assessment",
-    "subtitle": "Vite + React + TypeScript + Tailwind est prêt. Liste, tri et actions de statut arrivent en phase 4."
+    "brand": "Revue recrutement",
+    "title": "Candidats",
+    "subtitle": "Examinez les candidatures, triez par statut ou date, et acceptez ou rejetez les candidats en attente."
   },
   "language": {
     "label": "Langue",
     "en": "English",
     "de": "Deutsch",
     "fr": "Français"
+  },
+  "candidates": {
+    "search": "Recherche",
+    "searchPlaceholder": "Rechercher par nom",
+    "filterStatus": "Statut",
+    "allStatuses": "Tous",
+    "clearStatusFilter": "Effacer le filtre de statut",
+    "needsReview": "À examiner",
+    "reviewedDone": "Examiné",
+    "reviewApplication": "Examiner la candidature",
+    "viewDetails": "Voir les détails",
+    "showFilters": "Filtres",
+    "hideFilters": "Masquer les filtres",
+    "sortBy": "Trier par",
+    "sortDateApplied": "Date de candidature",
+    "direction": "Direction",
+    "asc": "Croissant",
+    "desc": "Décroissant",
+    "reset": "Réinitialiser",
+    "accept": "Accepter",
+    "reject": "Rejeter",
+    "close": "Fermer",
+    "clearSelection": "Effacer",
+    "selectCandidate": "Sélectionner {{name}}",
+    "selectedCount": "{{count}} sélectionné(s)",
+    "bulkActionableHint": "{{count}} en attente peuvent être mis à jour",
+    "confirmTitle": "Confirmer le changement de statut",
+    "confirmAcceptMany": "Accepter {{count}} candidats en attente ? Cette action est irréversible.",
+    "confirmRejectMany": "Rejeter {{count}} candidats en attente ? Cette action est irréversible.",
+    "confirmSkippedLocked": "{{count}} sélection(s) verrouillée(s) seront ignorée(s).",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "statusLocked": "Le statut est final et ne peut plus être modifié.",
+    "loading": "Chargement des candidats…",
+    "loadError": "Impossible de charger les candidats.",
+    "empty": "Aucun candidat pour ces filtres.",
+    "unknownError": "Une erreur est survenue.",
+    "noDescription": "Aucune description fournie.",
+    "yes": "Oui",
+    "no": "Non",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "pageOf": "Page {{page}} sur {{totalPages}}",
+    "pageMeta": "Page {{page}} sur {{totalPages}} · {{total}}",
+    "totalCount": "{{count}} candidats",
+    "yearsExp": "{{count}} ans d'expérience",
+    "fields": {
+      "status": "Statut",
+      "dateApplied": "Date de candidature",
+      "reviewed": "Examiné"
+    },
+    "statuses": {
+      "pending": "En attente",
+      "accepted": "Accepté",
+      "rejected": "Rejeté"
+    }
   }
 }

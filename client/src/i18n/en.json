@@ -1,13 +1,69 @@
 {
   "app": {
-    "brand": "Candidates",
-    "title": "Assessment client",
-    "subtitle": "Vite + React + TypeScript + Tailwind is ready. Candidate list, sort, and status actions land in phase 4."
+    "brand": "Hire review",
+    "title": "Candidates",
+    "subtitle": "Review applications, sort by status or date, and accept or reject pending candidates."
   },
   "language": {
     "label": "Language",
     "en": "English",
     "de": "Deutsch",
     "fr": "Français"
+  },
+  "candidates": {
+    "search": "Search",
+    "searchPlaceholder": "Search by name",
+    "filterStatus": "Status",
+    "allStatuses": "All",
+    "clearStatusFilter": "Clear status filter",
+    "needsReview": "Needs review",
+    "reviewedDone": "Reviewed",
+    "reviewApplication": "Review application",
+    "viewDetails": "View details",
+    "showFilters": "Filters",
+    "hideFilters": "Hide filters",
+    "sortBy": "Sort by",
+    "sortDateApplied": "Date applied",
+    "direction": "Direction",
+    "asc": "Ascending",
+    "desc": "Descending",
+    "reset": "Reset",
+    "accept": "Accept",
+    "reject": "Reject",
+    "close": "Close",
+    "clearSelection": "Clear",
+    "selectCandidate": "Select {{name}}",
+    "selectedCount": "{{count}} selected",
+    "bulkActionableHint": "{{count}} pending can update",
+    "confirmTitle": "Confirm status change",
+    "confirmAcceptMany": "Accept {{count}} pending candidates? This cannot be undone.",
+    "confirmRejectMany": "Reject {{count}} pending candidates? This cannot be undone.",
+    "confirmSkippedLocked": "{{count}} locked selection(s) will be skipped.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "statusLocked": "Status is final and cannot be changed.",
+    "loading": "Loading candidates…",
+    "loadError": "Could not load candidates.",
+    "empty": "No candidates match these filters.",
+    "unknownError": "Something went wrong.",
+    "noDescription": "No description provided.",
+    "yes": "Yes",
+    "no": "No",
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{totalPages}}",
+    "pageMeta": "Page {{page}} of {{totalPages}} · {{total}}",
+    "totalCount": "{{count}} candidates",
+    "yearsExp": "{{count}} years of experience",
+    "fields": {
+      "status": "Status",
+      "dateApplied": "Date applied",
+      "reviewed": "Reviewed"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    }
   }
 }

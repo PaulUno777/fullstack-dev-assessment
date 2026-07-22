@@ -4,8 +4,18 @@ class Candidate < ApplicationRecord
 
   validates :status, inclusion: { in: STATUSES }
 
-  scope :by_status, ->(status) {
-    status.present? ? where(status: status) : all
+  # Accepts a single status, CSV (`pending,accepted`), or an array.
+  scope :by_status, ->(raw) {
+    return all if raw.blank?
+
+    statuses = Array(raw)
+      .flat_map { |value| value.to_s.split(",") }
+      .map(&:strip)
+      .reject(&:blank?)
+      .select { |value| STATUSES.include?(value) }
+      .uniq
+
+    statuses.empty? ? all : where(status: statuses)
   }
 
   scope :search_name, ->(query) {
