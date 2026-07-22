@@ -151,6 +151,25 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 
 ---
 
+## UI/UX enhancements (beyond `INSTRUCTIONS.md`)
+
+Voluntary polish on `feat/ui-ux-enhancements`. Core C1–C3 stay intact (card list, not table; sort UI; status via API; lock when final). These are deliberate extras for the assessment narrative.
+
+| Enhancement | Why | Notes |
+|-------------|-----|-------|
+| Multi-status filter | Recruiters often need “pending + rejected” without losing server pagination | API: `status=pending,rejected` (CSV) and/or `status[]=…`; client multi-select dropdown |
+| Dedicated bulk endpoint | One round-trip, consistent errors, same status rules | `PATCH /candidates/bulk` with `{ ids, status }` → `{ data, meta, errors }`; service `Candidates::BulkUpdateStatus` reuses `UpdateStatus` |
+| Card selection + floating bulk bar | Speed up review of many pending cards | Confirm dialog before Accept/Reject; only pending IDs update; locked selection explained |
+| Candidate detail modal | Keep cards compact; full description + Accept/Reject in modal | List fields still match C1; no Accept/Reject on the card itself |
+| Persist filters / sort / language | Restore review context after reload | `localStorage` for `statuses` / `sort` / `direction` / locale. Not persisted: selection, `q`, `page` |
+| Browser language detection | First visit matches `navigator.language` (`en`/`de`/`fr`, else `en`) | Explicit LanguageSwitcher choice overrides and persists |
+| Sticky toolbar + date sort arrow | Keep controls reachable; C2 sort fields unchanged | Direction toggle arrow **only** on Date applied; Status sortable without arrow |
+| 2-column card grid | Denser review on large screens | `grid-cols-1 lg:grid-cols-2`; selected cards use teal ring + soft glow |
+
+Brief compliance: Accept/Reject (single + bulk) still go through `Candidates::UpdateStatus` / `StatusPolicy` (A2/A4); status lock unchanged (C3). Cards remain the list UI — no table.
+
+---
+
 ## Changelog of plan updates
 
 | Date | Change |
@@ -160,3 +179,4 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 | 2026-07-22 | Phase 2: regenerate `api/rails` + `client` (pnpm); toolchain via machine PATH |
 | 2026-07-22 | Phase 3: API A1–A4, pagination/search, EN/DE/FR i18n, CI badges; CD omitted |
 | 2026-07-22 | Phase 4: remove `old/`; TanStack Query + Zustand client UI |
+| 2026-07-22 | UI/UX enhancements: multi-status, bulk API, selection/modal, persist, auto-i18n |
