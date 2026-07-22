@@ -3,34 +3,19 @@ import {
   bulkConfirmCopy,
   partitionSelectedForBulk,
 } from './bulkSelection'
-import type { Candidate } from './candidate'
-
-function candidate(
-  overrides: Partial<Candidate> & Pick<Candidate, 'id' | 'status'>,
-): Candidate {
-  return {
-    name: 'Test',
-    years_exp: 1,
-    date_applied: '2020-01-01T00:00:00.000Z',
-    reviewed: overrides.status !== 'pending',
-    description: '',
-    created_at: '2020-01-01T00:00:00.000Z',
-    updated_at: '2020-01-01T00:00:00.000Z',
-    ...overrides,
-  }
-}
 
 describe('partitionSelectedForBulk', () => {
-  it('keeps only pending selected ids actionable', () => {
-    const rows = [
-      candidate({ id: 1, status: 'pending' }),
-      candidate({ id: 2, status: 'accepted' }),
-      candidate({ id: 3, status: 'pending' }),
-    ]
-
-    expect(partitionSelectedForBulk(rows, [1, 2, 3, 99])).toEqual({
+  it('keeps only pending selected ids actionable across pages', () => {
+    expect(
+      partitionSelectedForBulk([1, 2, 3, 99], {
+        1: 'pending',
+        2: 'accepted',
+        3: 'pending',
+      }),
+    ).toEqual({
       pendingIds: [1, 3],
       lockedCount: 1,
+      unknownCount: 1,
     })
   })
 })

@@ -13,12 +13,13 @@ type CandidatesUiState = {
   sort: SortField
   direction: SortDirection
   selectedIds: number[]
+  selectedStatusById: Record<number, CandidateStatus>
   setPage: (page: number) => void
   setStatuses: (statuses: CandidateStatus[]) => void
   setQ: (q: string) => void
   setSort: (sort: SortField) => void
   setDirection: (direction: SortDirection) => void
-  toggleSelected: (id: number) => void
+  toggleSelected: (id: number, status: CandidateStatus) => void
   setSelectedIds: (ids: number[]) => void
   clearSelection: () => void
   resetFilters: () => void
@@ -32,25 +33,45 @@ const initialFilters = {
   sort: 'date_applied' as SortField,
   direction: 'desc' as SortDirection,
   selectedIds: [] as number[],
+  selectedStatusById: {} as Record<number, CandidateStatus>,
 }
 
 export const useCandidatesUiStore = create<CandidatesUiState>()(
   persist(
     (set) => ({
       ...initialFilters,
-      setPage: (page) => set({ page, selectedIds: [] }),
-      setStatuses: (statuses) => set({ statuses, page: 1, selectedIds: [] }),
-      setQ: (q) => set({ q, page: 1, selectedIds: [] }),
-      setSort: (sort) => set({ sort, page: 1, selectedIds: [] }),
-      setDirection: (direction) => set({ direction, page: 1, selectedIds: [] }),
-      toggleSelected: (id) =>
-        set((state) => ({
-          selectedIds: state.selectedIds.includes(id)
-            ? state.selectedIds.filter((item) => item !== id)
-            : [...state.selectedIds, id],
-        })),
-      setSelectedIds: (ids) => set({ selectedIds: ids }),
-      clearSelection: () => set({ selectedIds: [] }),
+      setPage: (page) => set({ page }),
+      setStatuses: (statuses) => set({ statuses, page: 1 }),
+      setQ: (q) => set({ q, page: 1 }),
+      setSort: (sort) => set({ sort, page: 1 }),
+      setDirection: (direction) => set({ direction, page: 1 }),
+      toggleSelected: (id, status) =>
+        set((state) => {
+          if (state.selectedIds.includes(id)) {
+            const selectedStatusById = { ...state.selectedStatusById }
+            delete selectedStatusById[id]
+            return {
+              selectedIds: state.selectedIds.filter((item) => item !== id),
+              selectedStatusById,
+            }
+          }
+          return {
+            selectedIds: [...state.selectedIds, id],
+            selectedStatusById: { ...state.selectedStatusById, [id]: status },
+          }
+        }),
+      setSelectedIds: (ids) =>
+        set((state) => {
+          const selectedStatusById: Record<number, CandidateStatus> = {}
+          for (const id of ids) {
+            if (state.selectedStatusById[id]) {
+              selectedStatusById[id] = state.selectedStatusById[id]
+            }
+          }
+          return { selectedIds: ids, selectedStatusById }
+        }),
+      clearSelection: () =>
+        set({ selectedIds: [], selectedStatusById: {} }),
       resetFilters: () =>
         set({
           page: initialFilters.page,
@@ -59,7 +80,6 @@ export const useCandidatesUiStore = create<CandidatesUiState>()(
           q: initialFilters.q,
           sort: initialFilters.sort,
           direction: initialFilters.direction,
-          selectedIds: [],
         }),
     }),
     {

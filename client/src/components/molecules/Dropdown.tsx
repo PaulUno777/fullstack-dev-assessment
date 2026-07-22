@@ -86,7 +86,7 @@ export function Dropdown({
         <div
           id={menuId}
           role="listbox"
-          className={`absolute z-30 mt-1 min-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-lg ${
+          className={`absolute z-[80] mt-1 min-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-lg ${
             align === 'right' ? 'right-0' : 'left-0'
           }`}
           onClick={() => {

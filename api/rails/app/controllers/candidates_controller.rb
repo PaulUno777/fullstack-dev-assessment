@@ -22,10 +22,7 @@ class CandidatesController < ApplicationController
 
   def update
     if candidate_params.key?(:reviewed) && !candidate_params.key?(:status)
-      result = Candidates::MarkReviewed.call(
-        candidate: @candidate,
-        reviewed: candidate_params[:reviewed]
-      )
+      result = Candidates::MarkReviewed.call(candidate: @candidate)
       return render json: Candidates::Serializer.one(result.candidate) if result.ok?
 
       return render json: {

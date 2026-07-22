@@ -32,8 +32,7 @@ export function SortControls() {
     <button
       type="button"
       className={`${chipBase} ${chipActive}`}
-      aria-label={`${t('candidates.sortBy')}: ${t('candidates.sortDateApplied')}, ${t(`candidates.${direction}`)}`}
-      aria-pressed="true"
+      aria-label={`${t('candidates.sortBy')}: ${t('candidates.sortDateApplied')}`}
       onClick={toggleDirection}
     >
       <span>{t('candidates.sortDateApplied')}</span>

@@ -15,7 +15,7 @@ class CandidatesMarkReviewedTest < ActiveSupport::TestCase
   end
 
   test "marks pending candidate as reviewed" do
-    result = Candidates::MarkReviewed.call(candidate: @candidate, reviewed: true)
+    result = Candidates::MarkReviewed.call(candidate: @candidate)
 
     assert result.ok?
     assert_equal true, result.candidate.reviewed
@@ -24,7 +24,7 @@ class CandidatesMarkReviewedTest < ActiveSupport::TestCase
 
   test "is idempotent when already reviewed" do
     @candidate.update!(reviewed: true)
-    result = Candidates::MarkReviewed.call(candidate: @candidate, reviewed: true)
+    result = Candidates::MarkReviewed.call(candidate: @candidate)
 
     assert result.ok?
     assert_equal true, result.candidate.reviewed

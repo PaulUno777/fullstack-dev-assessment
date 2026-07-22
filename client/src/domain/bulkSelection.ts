@@ -1,30 +1,34 @@
-import type { Candidate, CandidateStatus } from './candidate'
+import type { CandidateStatus } from './candidate'
 import { canChangeStatus } from './candidate'
 
 export type BulkPartition = {
   pendingIds: number[]
   lockedCount: number
+  unknownCount: number
 }
 
 export function partitionSelectedForBulk(
-  candidates: Candidate[],
   selectedIds: number[],
+  statusById: Record<number, CandidateStatus>,
 ): BulkPartition {
-  const byId = new Map(candidates.map((row) => [row.id, row]))
   const pendingIds: number[] = []
   let lockedCount = 0
+  let unknownCount = 0
 
   for (const id of selectedIds) {
-    const row = byId.get(id)
-    if (!row) continue
-    if (canChangeStatus(row.status)) {
+    const status = statusById[id]
+    if (!status) {
+      unknownCount += 1
+      continue
+    }
+    if (canChangeStatus(status)) {
       pendingIds.push(id)
     } else {
       lockedCount += 1
     }
   }
 
-  return { pendingIds, lockedCount }
+  return { pendingIds, lockedCount, unknownCount }
 }
 
 export function bulkConfirmCopy(input: {

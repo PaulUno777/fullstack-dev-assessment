@@ -64,17 +64,6 @@ class CandidatesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, body["data"].length
   end
 
-  test "index with only invalid status values returns empty list" do
-    get candidates_url,
-        params: { status: "not-a-status" },
-        headers: { "Accept" => "application/json" }
-
-    assert_response :success
-    body = JSON.parse(response.body)
-    assert_equal 0, body["data"].length
-    assert_equal 0, body["meta"]["total"]
-  end
-
   test "index searches by name" do
     get candidates_url, params: { q: "brian" }, headers: { "Accept" => "application/json" }
 

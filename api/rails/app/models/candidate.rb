@@ -15,7 +15,7 @@ class Candidate < ApplicationRecord
       .select { |value| STATUSES.include?(value) }
       .uniq
 
-    statuses.empty? ? none : where(status: statuses)
+    statuses.empty? ? all : where(status: statuses)
   }
 
   scope :search_name, ->(query) {

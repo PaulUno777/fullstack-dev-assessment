@@ -35,25 +35,31 @@ export function CandidatesPage() {
   const page = useCandidatesUiStore((s) => s.page)
   const setPage = useCandidatesUiStore((s) => s.setPage)
   const selectedIds = useCandidatesUiStore((s) => s.selectedIds)
+  const selectedStatusById = useCandidatesUiStore((s) => s.selectedStatusById)
   const toggleSelected = useCandidatesUiStore((s) => s.toggleSelected)
+  const setSelectedIds = useCandidatesUiStore((s) => s.setSelectedIds)
   const clearSelection = useCandidatesUiStore((s) => s.clearSelection)
   const [rowErrors, setRowErrors] = useState<Record<number, string>>({})
   const [detailCandidate, setDetailCandidate] = useState<Candidate | null>(null)
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
   const [confirmBusy, setConfirmBusy] = useState(false)
-
-  const candidates = listQuery.data?.data ?? []
-  const totalPages = listQuery.data?.meta.total_pages ?? 0
+  const [markReviewedError, setMarkReviewedError] = useState<string | null>(null)
 
   useEffect(() => {
+    const totalPages = listQuery.data?.meta.total_pages
+    if (totalPages == null) return
+    if (totalPages === 0 && page !== 1) {
+      setPage(1)
+      return
+    }
     if (totalPages > 0 && page > totalPages) {
       setPage(totalPages)
     }
-  }, [page, totalPages, setPage])
+  }, [listQuery.data?.meta.total_pages, page, setPage])
 
   const partition = useMemo(
-    () => partitionSelectedForBulk(candidates, selectedIds),
-    [candidates, selectedIds],
+    () => partitionSelectedForBulk(selectedIds, selectedStatusById),
+    [selectedIds, selectedStatusById],
   )
 
   function requestBulk(status: 'accepted' | 'rejected') {
@@ -66,6 +72,7 @@ export function CandidatesPage() {
   }
 
   async function openDetails(candidate: Candidate) {
+    setMarkReviewedError(null)
     setDetailCandidate(candidate)
     if (candidate.reviewed) return
     try {
@@ -76,7 +83,7 @@ export function CandidatesPage() {
         error instanceof ApiError
           ? error.message
           : t('candidates.unknownError')
-      setRowErrors((prev) => ({ ...prev, [candidate.id]: message }))
+      setMarkReviewedError(message)
     }
   }
 
@@ -109,7 +116,8 @@ export function CandidatesPage() {
         ids: pendingAction.ids,
         status: pendingAction.status,
       })
-      if (result.meta.failed > 0) {
+
+      if (result.errors.length > 0) {
         setRowErrors((prev) => {
           const next = { ...prev }
           for (const error of result.errors) {
@@ -117,8 +125,12 @@ export function CandidatesPage() {
           }
           return next
         })
+        const failedIds = new Set(result.errors.map((error) => error.id))
+        setSelectedIds(selectedIds.filter((id) => failedIds.has(id)))
+      } else {
+        clearSelection()
       }
-      clearSelection()
+
       setPendingAction(null)
       setDetailCandidate(null)
     } catch (error) {
@@ -150,25 +162,27 @@ export function CandidatesPage() {
     <div className="relative min-h-screen bg-[#f3efe6] text-slate-900">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,0.12),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(180,83,9,0.1),_transparent_35%)]" />
 
-      <div className="relative mx-auto max-w-5xl px-4 pt-10 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-900/70">
-              {t('app.brand')}
-            </p>
-            <h1 className="font-display mt-2 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              {t('app.title')}
-            </h1>
-            <p className="mt-3 max-w-2xl text-base text-slate-700">
-              {t('app.subtitle')}
-            </p>
-          </div>
-          <LanguageSwitcher />
-        </header>
-      </div>
+      <div className="sticky top-0 z-50 border-b border-teal-900/10 bg-teal-900/[0.12] shadow-sm backdrop-blur-md">
+        <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
+          <header className="relative z-[60] mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-900/70">
+                {t('app.brand')}
+              </p>
+              <h1 className="font-display mt-1 text-3xl font-semibold tracking-tight text-slate-950 sm:mt-2 sm:text-5xl">
+                {t('app.title')}
+              </h1>
+              <p className="mt-2 hidden max-w-2xl text-base text-slate-700 sm:mt-3 sm:block">
+                {t('app.subtitle')}
+              </p>
+            </div>
+            <div className="relative z-[70] self-end sm:self-auto">
+              <LanguageSwitcher />
+            </div>
+          </header>
+        </div>
 
-      <div className="sticky top-0 z-30 border-b border-teal-900/10 bg-teal-900/[0.12] shadow-sm backdrop-blur-md">
-        <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6 lg:px-8">
+        <div className="relative z-40 mx-auto max-w-5xl px-4 pb-3 sm:px-6 lg:px-8">
           <CandidatesToolbar
             page={listQuery.data?.meta.page ?? 1}
             totalPages={listQuery.data?.meta.total_pages ?? 0}
@@ -207,9 +221,10 @@ export function CandidatesPage() {
               key={candidate.id}
               candidate={candidate}
               selected={selectedIds.includes(candidate.id)}
-              onToggleSelect={() => toggleSelected(candidate.id)}
+              onToggleSelect={() =>
+                toggleSelected(candidate.id, candidate.status)
+              }
               onOpen={() => void openDetails(candidate)}
-              errorMessage={rowErrors[candidate.id]}
             />
           ))}
         </div>
@@ -226,11 +241,16 @@ export function CandidatesPage() {
 
       <CandidateDetailModal
         candidate={detailCandidate}
-        busy={mutation.isPending}
+        busy={mutation.isPending || markReviewedMutation.isPending}
         errorMessage={
-          detailCandidate ? rowErrors[detailCandidate.id] : undefined
+          detailCandidate
+            ? (rowErrors[detailCandidate.id] ?? markReviewedError ?? undefined)
+            : undefined
         }
-        onClose={() => setDetailCandidate(null)}
+        onClose={() => {
+          setDetailCandidate(null)
+          setMarkReviewedError(null)
+        }}
         onAccept={() => {
           if (detailCandidate) void changeStatus(detailCandidate.id, 'accepted')
         }}
