@@ -62,7 +62,7 @@ After each phase: **commit → verify → human PR into `develop` → confirm** 
 | Sort location | Server supports `sort`/`direction`; Phase 4 may also sort client-side |
 | Pagination | `page` / `per_page` with `meta` (default 20, max 100) |
 | Search | `q` matches candidate `name` (case-insensitive) |
-| Legacy code | Moved to `old/` for provenance; not executed |
+| Legacy code | Archived then **removed** in Phase 4 (history retains `chore: archive…`); active code only under `api/rails` + `client` |
 
 ---
 
@@ -156,3 +156,4 @@ Flow: `feature → develop` (human opens PR) → later `develop → master` if n
 | 2026-07-22 | Git model: `develop` + per-phase feature branches; human-owned PRs |
 | 2026-07-22 | Phase 2: regenerate `api/rails` + `client` (pnpm); toolchain via machine PATH |
 | 2026-07-22 | Phase 3: API A1–A4, pagination/search, EN/DE/FR i18n, CI badges; CD omitted |
+| 2026-07-22 | Phase 4: remove `old/`; TanStack Query + Zustand client UI |
