@@ -1,112 +1,110 @@
-# Paulin Nzodoum Assessment — Nextise / Hire an Esquire
+# Candidates Assessment — Nextise / Hire an Esquire
 
 [![CI](https://github.com/PaulUno777/fullstack-dev-assessment/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/PaulUno777/fullstack-dev-assessment/actions/workflows/ci.yml)
 
-A modernized Rails API and React client for listing, sorting, and updating candidate
-application statuses.
+Review job applications: list candidates, filter/search/sort, and accept or reject
+**pending** profiles. Built as an AI-driven fullstack assessment delivery
+(plan → architecture rules → tests → CI → atomic Git history).
 
-This repository demonstrates an **AI-driven** development workflow: a written plan
-before any code, Cursor rules that encode the target architecture, clean scaffolding,
-systematic testing, CI, and an atomic Git history.
-
-> Original brief (product requirements — **do not modify**): [`INSTRUCTIONS.md`](./INSTRUCTIONS.md)  
-> Living plan (audit, decisions, requirements traceability): [`PLAN.md`](./PLAN.md)
+> Product brief (immutable): [`INSTRUCTIONS.md`](./INSTRUCTIONS.md)  
+> Decisions & requirement traceability: [`PLAN.md`](./PLAN.md)
 
 ---
 
-## Status
+## Quick start (< 2 minutes)
 
-| Phase | Description | State |
-|-------|-------------|-------|
-| 1 | Docs, stack audit, Cursor rules | **Done** |
-| 2 | Archive legacy code, scaffold Rails / Vite | **Done** |
-| 3 | API domain + pagination/search + i18n + CI | **Done** (PR pending) |
-| 4 | Client UI + tests | Pending |
-| 5 | Polish README / Loom | Pending (CI already in Phase 3) |
-
-**CD:** intentionally omitted — local demo + Loom video; no production host for this assessment.
-
----
-
-## Target stack
-
-| Layer | Technology | Version target |
-|-------|------------|-----------------|
-| Backend | Ruby + Rails (API-only) under `api/rails` | Ruby 3.4.x / Rails 8.1.3 |
-| Database (dev/test) | SQLite | bundled with Rails |
-| Frontend | Vite + React + TypeScript + Tailwind CSS | Vite 8.x / React 19.2.x / Tailwind 4.x |
-| Package manager (FE) | pnpm | 10.x |
-| i18n | Rails I18n + i18next | EN / DE / FR |
-| Tests | Minitest (backend); Vitest later (Phase 4) | stack defaults |
-| CI | GitHub Actions | lint + test on push/PR |
-
-Legacy starters live under `old/` for provenance only.
-
----
-
-## Architecture (summary)
-
-- **Backend:** controllers orchestrate HTTP; `Candidates::StatusPolicy` / `UpdateStatus` / `ListQuery` own business rules; models validate and persist.
-- **Frontend:** `domain` → `api` → `state` → `components` → `pages` (full UI in Phase 4). i18n foundation already present.
-- **Security:** CORS restricted to `http://localhost:5173` — no wildcard origins.
-
----
-
-## API (Phase 3)
-
-| Method | Path | Notes |
-|--------|------|--------|
-| `GET` | `/candidates` | Paginated list + filters |
-| `GET` | `/candidates/:id` | Show one |
-| `PATCH` | `/candidates/:id` | Update `status` only |
-
-Query params for list: `page`, `per_page`, `status`, `q` (name search), `sort` (`status` \| `date_applied`), `direction` (`asc` \| `desc`).
-
-Response shape:
-
-```json
-{ "data": [ /* candidates */ ], "meta": { "page": 1, "per_page": 20, "total": 6, "total_pages": 1 } }
-```
-
-Errors: `{ "errors": [{ "code": "status_locked", "message": "..." }] }` — `message` localized via `Accept-Language` (`en`, `de`, `fr`).
-
----
-
-## Quick start
-
-Requires Ruby/Rails and Node 22+ with pnpm on your machine (no project-level `mise.toml`).
+Needs Ruby 3.4+ / Rails 8.1, Node 22+, and pnpm on your machine.
 
 ```bash
-# Backend
+# API
 cd api/rails
 bundle install
 bin/rails db:setup
-bin/rails server
-# → http://localhost:3000
+bin/rails server   # http://localhost:3000
 
-# Frontend (separate terminal)
+# Client (second terminal)
 cd client
 pnpm install
-pnpm dev
-# → http://localhost:5173
+pnpm dev           # http://localhost:5173
 ```
 
 Checks:
 
 ```bash
 cd api/rails && bin/rails test
-cd client && pnpm build
+cd client && pnpm test && pnpm build
 ```
+
+---
+
+## What you get
+
+| Area | Implementation |
+|------|----------------|
+| API | Rails 8.1 JSON API — list / show / update status |
+| Rules | Pending → accepted/rejected sets `reviewed=true`; final statuses locked |
+| Client | Vite + React 19 + TypeScript + Tailwind |
+| Data | TanStack Query (server cache) + Zustand (UI filters) |
+| i18n | EN / DE / FR (UI + API error messages via `Accept-Language`) |
+| CI | GitHub Actions — API tests + client test/lint/build |
+
+**CD:** intentionally omitted (local demo + Loom). No disposable cloud deploy for this assessment.
+
+---
+
+## Why not Redux? (Loom talking point)
+
+The brief *suggests* Redux but does not require it. This app uses:
+
+- **TanStack Query** for server state (fetch, cache, invalidate after PATCH)
+- **Zustand** for local UI state (search, status filter, sort, page)
+
+Redux would add boilerplate and a global event-sourced-style store for one screen.
+There is no complex cross-feature event bus here — Query + Zustand stay easier to
+explain, test, and change.
+
+---
+
+## Project structure
+
+```
+api/rails/          Rails API (services: StatusPolicy, UpdateStatus, ListQuery)
+client/src/
+  api/              HTTP client
+  domain/           Pure rules (canChangeStatus) + Vitest
+  state/            Zustand UI store
+  hooks/            TanStack Query hooks
+  components/       atoms → molecules → organisms
+  pages/            CandidatesPage
+INSTRUCTIONS.md     Original hiring brief
+PLAN.md             Audit, scope extensions, traceability
+```
+
+---
+
+## API cheat sheet
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/candidates` | `page`, `per_page`, `status`, `q`, `sort`, `direction` |
+| `GET` | `/candidates/:id` | Show |
+| `PATCH` | `/candidates/:id` | `{ "candidate": { "status": "accepted" } }` |
+
+List response: `{ "data": [...], "meta": { page, per_page, total, total_pages } }`
 
 ---
 
 ## Requirements coverage
 
-See [`PLAN.md`](./PLAN.md) for IDs A1–A4 / C1–C4 and documented scope extensions (pagination, search, i18n).
+| ID | Brief requirement | Status |
+|----|-------------------|--------|
+| A1–A4 | JSON API list/show/update + `reviewed` rule | Done |
+| C1–C3 | List UI, sort UI, status actions + lock | Done |
+| C4 | Redux optional | TanStack Query + Zustand (documented) |
 
 ---
 
 ## License / context
 
-Technical assessment for the AI-Driven Full-Stack Developer role at Nextise, built on
-the original challenge provided by [Hire an Esquire](https://hireanesquire.com/).
+Technical assessment for the AI-Driven Full-Stack Developer role at Nextise,
+based on the original challenge from [Hire an Esquire](https://hireanesquire.com/).

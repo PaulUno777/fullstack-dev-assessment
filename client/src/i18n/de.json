@@ -1,13 +1,49 @@
 {
   "app": {
-    "brand": "Kandidaten",
-    "title": "Assessment-Client",
-    "subtitle": "Vite + React + TypeScript + Tailwind ist bereit. Kandidatenliste, Sortierung und Statusaktionen folgen in Phase 4."
+    "brand": "Bewertungsflow",
+    "title": "Kandidaten",
+    "subtitle": "Bewerbungen prüfen, nach Status oder Datum sortieren und ausstehende Kandidaten annehmen oder ablehnen."
   },
   "language": {
     "label": "Sprache",
     "en": "English",
     "de": "Deutsch",
     "fr": "Français"
+  },
+  "candidates": {
+    "search": "Suche",
+    "searchPlaceholder": "Nach Name suchen",
+    "filterStatus": "Status",
+    "allStatuses": "Alle",
+    "sortBy": "Sortieren nach",
+    "direction": "Richtung",
+    "asc": "Aufsteigend",
+    "desc": "Absteigend",
+    "reset": "Zurücksetzen",
+    "accept": "Annehmen",
+    "reject": "Ablehnen",
+    "statusLocked": "Der Status ist final und kann nicht geändert werden.",
+    "loading": "Kandidaten werden geladen…",
+    "loadError": "Kandidaten konnten nicht geladen werden.",
+    "empty": "Keine Kandidaten für diese Filter.",
+    "unknownError": "Etwas ist schiefgelaufen.",
+    "noDescription": "Keine Beschreibung vorhanden.",
+    "yes": "Ja",
+    "no": "Nein",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "pageOf": "Seite {{page}} von {{totalPages}}",
+    "totalCount": "{{count}} Kandidaten",
+    "yearsExp": "{{count}} Jahre Erfahrung",
+    "fields": {
+      "status": "Status",
+      "dateApplied": "Bewerbungsdatum",
+      "reviewed": "Geprüft"
+    },
+    "statuses": {
+      "pending": "Ausstehend",
+      "accepted": "Angenommen",
+      "rejected": "Abgelehnt"
+    }
   }
 }
