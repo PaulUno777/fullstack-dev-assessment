@@ -35,6 +35,34 @@ class CandidatesController < ApplicationController
     end
   end
 
+  def bulk
+    ids = Array(bulk_params[:ids])
+    status = bulk_params[:status]
+
+    if ids.empty? || status.blank?
+      return render json: {
+        errors: [ { code: "invalid_params", message: I18n.t("candidates.errors.invalid_params") } ]
+      }, status: :unprocessable_entity
+    end
+
+    result = Candidates::BulkUpdateStatus.call(ids: ids, status: status)
+
+    render json: {
+      data: Candidates::Serializer.many(result.updated),
+      meta: {
+        updated: result.updated.length,
+        failed: result.errors.length
+      },
+      errors: result.errors.map { |error|
+        {
+          id: error.id,
+          code: error.code,
+          message: I18n.t("candidates.errors.#{error.code}")
+        }
+      }
+    }
+  end
+
   private
 
   def set_candidate
@@ -49,7 +77,14 @@ class CandidatesController < ApplicationController
     params.require(:candidate).permit(:status)
   end
 
+  def bulk_params
+    params.permit(:status, ids: [])
+  end
+
   def list_params
-    params.permit(:page, :per_page, :status, :q, :sort, :direction)
+    permitted = params.permit(:page, :per_page, :q, :sort, :direction)
+    # Scalar, CSV, or array (`status[]=pending&status[]=rejected`)
+    permitted[:status] = params[:status] if params.key?(:status)
+    permitted
   end
 end

@@ -5,3 +5,4 @@ fr:
       status_locked: "Le statut ne peut plus être modifié une fois accepté ou rejeté"
       invalid_transition: "Seuls les candidats en attente peuvent être acceptés ou rejetés"
       invalid_status: "Le statut doit être pending, accepted ou rejected"
+      invalid_params: "ids et status sont requis"

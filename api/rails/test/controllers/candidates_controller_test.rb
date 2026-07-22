@@ -43,6 +43,27 @@ class CandidatesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "pending", body["data"].first["status"]
   end
 
+  test "index filters by comma-separated multi-status" do
+    get candidates_url,
+        params: { status: "pending,accepted" },
+        headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 2, body["data"].length
+    assert_equal %w[accepted pending].sort, body["data"].map { |row| row["status"] }.sort
+  end
+
+  test "index filters by status array params" do
+    get candidates_url,
+        params: { status: %w[pending accepted] },
+        headers: { "Accept" => "application/json" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 2, body["data"].length
+  end
+
   test "index searches by name" do
     get candidates_url, params: { q: "brian" }, headers: { "Accept" => "application/json" }
 
@@ -124,5 +145,38 @@ class CandidatesControllerTest < ActionDispatch::IntegrationTest
     body = JSON.parse(response.body)
     assert_equal "status_locked", body["errors"].first["code"]
     assert_match(/nicht mehr geändert/i, body["errors"].first["message"])
+  end
+
+  test "bulk updates pending candidates and reports locked failures" do
+    another_pending = Candidate.create!(
+      name: "Casey Lee",
+      years_exp: 4,
+      status: "pending",
+      date_applied: Time.zone.parse("2018-06-03 10:00:00"),
+      reviewed: false,
+      description: "associate"
+    )
+
+    patch bulk_candidates_url,
+          params: { ids: [ @pending.id, another_pending.id, @accepted.id ], status: "accepted" },
+          as: :json
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 2, body["meta"]["updated"]
+    assert_equal 1, body["meta"]["failed"]
+    assert_equal 2, body["data"].length
+    assert_equal "status_locked", body["errors"].first["code"]
+    assert_equal @accepted.id, body["errors"].first["id"]
+    assert_equal "accepted", @pending.reload.status
+    assert_equal "accepted", another_pending.reload.status
+  end
+
+  test "bulk requires ids and status" do
+    patch bulk_candidates_url, params: { ids: [], status: "accepted" }, as: :json
+
+    assert_response :unprocessable_entity
+    body = JSON.parse(response.body)
+    assert_equal "invalid_params", body["errors"].first["code"]
   end
 end
