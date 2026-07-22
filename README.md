@@ -1,5 +1,7 @@
 # Paulin Nzodoum Assessment — Nextise / Hire an Esquire
 
+[![CI](https://github.com/PaulUno777/fullstack-dev-assessment/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/PaulUno777/fullstack-dev-assessment/actions/workflows/ci.yml)
+
 A modernized Rails API and React client for listing, sorting, and updating candidate
 application statuses.
 
@@ -7,7 +9,7 @@ This repository demonstrates an **AI-driven** development workflow: a written pl
 before any code, Cursor rules that encode the target architecture, clean scaffolding,
 systematic testing, CI, and an atomic Git history.
 
-> Original brief (product requirements — **do not modify**): [`INSTRUCTIONS.md`](./INSTRUCTIONS.md)
+> Original brief (product requirements — **do not modify**): [`INSTRUCTIONS.md`](./INSTRUCTIONS.md)  
 > Living plan (audit, decisions, requirements traceability): [`PLAN.md`](./PLAN.md)
 
 ---
@@ -17,10 +19,12 @@ systematic testing, CI, and an atomic Git history.
 | Phase | Description | State |
 |-------|-------------|-------|
 | 1 | Docs, stack audit, Cursor rules | **Done** |
-| 2 | Archive legacy code, scaffold Rails / Vite | **Done** (PR pending) |
-| 3 | API domain logic + tests | Pending |
+| 2 | Archive legacy code, scaffold Rails / Vite | **Done** |
+| 3 | API domain + pagination/search + i18n + CI | **Done** (PR pending) |
 | 4 | Client UI + tests | Pending |
-| 5 | CI + final README | Pending |
+| 5 | Polish README / Loom | Pending (CI already in Phase 3) |
+
+**CD:** intentionally omitted — local demo + Loom video; no production host for this assessment.
 
 ---
 
@@ -32,32 +36,45 @@ systematic testing, CI, and an atomic Git history.
 | Database (dev/test) | SQLite | bundled with Rails |
 | Frontend | Vite + React + TypeScript + Tailwind CSS | Vite 8.x / React 19.2.x / Tailwind 4.x |
 | Package manager (FE) | pnpm | 10.x |
+| i18n | Rails I18n + i18next | EN / DE / FR |
 | Tests | Minitest (backend); Vitest later (Phase 4) | stack defaults |
-| CI | GitHub Actions | lint + test on every push/PR (Phase 5) |
+| CI | GitHub Actions | lint + test on push/PR |
 
-The legacy starters (Rails 5.2, CRA, Django) are preserved under `old/` after Phase 2,
-for provenance only — they are not part of the active codebase.
+Legacy starters live under `old/` for provenance only.
 
 ---
 
 ## Architecture (summary)
 
-- **Backend:** controllers only orchestrate HTTP; application services own the status
-  transition rules (auto-set `reviewed`, lock once a status is final); models handle
-  validation and persistence.
-- **Frontend:** layered as `domain` (pure business rules) → `api` (network) → `state`
-  → presentational `components` → `pages` (containers).
-- **Security:** CORS restricted to the Vite dev origin only — no wildcard origins.
+- **Backend:** controllers orchestrate HTTP; `Candidates::StatusPolicy` / `UpdateStatus` / `ListQuery` own business rules; models validate and persist.
+- **Frontend:** `domain` → `api` → `state` → `components` → `pages` (full UI in Phase 4). i18n foundation already present.
+- **Security:** CORS restricted to `http://localhost:5173` — no wildcard origins.
 
-Full rules live in [`.cursor/rules/architecture.mdc`](./.cursor/rules/architecture.mdc)
-and [`.cursor/rules/assessment-workflow.mdc`](./.cursor/rules/assessment-workflow.mdc).
+---
+
+## API (Phase 3)
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/candidates` | Paginated list + filters |
+| `GET` | `/candidates/:id` | Show one |
+| `PATCH` | `/candidates/:id` | Update `status` only |
+
+Query params for list: `page`, `per_page`, `status`, `q` (name search), `sort` (`status` \| `date_applied`), `direction` (`asc` \| `desc`).
+
+Response shape:
+
+```json
+{ "data": [ /* candidates */ ], "meta": { "page": 1, "per_page": 20, "total": 6, "total_pages": 1 } }
+```
+
+Errors: `{ "errors": [{ "code": "status_locked", "message": "..." }] }` — `message` localized via `Accept-Language` (`en`, `de`, `fr`).
 
 ---
 
 ## Quick start
 
-Requires Ruby/Rails and Node 22+ with pnpm already installed on your machine
-(no project-level `mise.toml`).
+Requires Ruby/Rails and Node 22+ with pnpm on your machine (no project-level `mise.toml`).
 
 ```bash
 # Backend
@@ -74,7 +91,7 @@ pnpm dev
 # → http://localhost:5173
 ```
 
-Useful checks:
+Checks:
 
 ```bash
 cd api/rails && bin/rails test
@@ -85,8 +102,7 @@ cd client && pnpm build
 
 ## Requirements coverage
 
-See the full traceability table in [`PLAN.md`](./PLAN.md), mapping implementation to
-requirement IDs A1–A4 (API) and C1–C4 (Client) from `INSTRUCTIONS.md`.
+See [`PLAN.md`](./PLAN.md) for IDs A1–A4 / C1–C4 and documented scope extensions (pagination, search, i18n).
 
 ---
 
